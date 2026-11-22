@@ -10,6 +10,9 @@ import com.capji.netpulse.domain.model.DeviceKind
  */
 object DeviceIdentifier {
 
+    const val VENDOR_PRIVATE = "@private"
+    const val VENDOR_UNKNOWN = "@unknown"
+
     data class Result(val vendor: String, val model: String?, val kind: DeviceKind, val randomized: Boolean)
 
     private val oui = mapOf(
@@ -36,7 +39,7 @@ object DeviceIdentifier {
 
     fun identify(mac: String, hostname: String): Result {
         val randomized = isRandomized(mac)
-        val vendor = if (randomized) "Private address" else oui[mac.uppercase().take(8)] ?: "Unknown vendor"
+        val vendor = if (randomized) VENDOR_PRIVATE else oui[mac.uppercase().take(8)] ?: VENDOR_UNKNOWN
         val h = hostname.lowercase()
 
         var model: String? = null

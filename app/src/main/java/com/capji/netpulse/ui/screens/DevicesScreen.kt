@@ -1,5 +1,7 @@
 package com.capji.netpulse.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -85,20 +87,20 @@ private fun DeviceList(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(Modifier.weight(1f)) {
-                Text("Devices", style = MaterialTheme.typography.headlineMedium)
+                Text(stringResource(R.string.devices_title), style = MaterialTheme.typography.headlineMedium)
                 Text(
-                    if (ui.scanning) "Scanning..." else "${ui.devices.size} connected",
+                    if (ui.scanning) stringResource(R.string.devices_scanning) else stringResource(R.string.devices_connected_fmt, ui.devices.size),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             FilledTonalIconButton(onClick = vm::rescan, enabled = !ui.scanning) {
-                Icon(Icons.Filled.Refresh, "Scan", Modifier.rotate(if (ui.scanning) angle else 0f))
+                Icon(Icons.Filled.Refresh, stringResource(R.string.cd_scan), Modifier.rotate(if (ui.scanning) angle else 0f))
             }
         }
 
         if (ui.devices.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No devices found yet", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.devices_none), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
             LazyColumn(

@@ -1,5 +1,8 @@
 package com.capji.netpulse.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.asString
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -82,12 +85,12 @@ fun SpeedTestScreen(modifier: Modifier = Modifier, vm: SpeedTestViewModel = view
     LaunchedEffect(s.liveMbps) { if (s.liveMbps > peak) peak = s.liveMbps }
 
     val phaseLabel = when (s.phase) {
-        SpeedPhase.IDLE -> "ready"
-        SpeedPhase.PING -> "measuring latency"
-        SpeedPhase.DOWNLOAD -> "download"
-        SpeedPhase.UPLOAD -> "upload"
-        SpeedPhase.DONE -> "complete"
-        SpeedPhase.ERROR -> "error"
+        SpeedPhase.IDLE -> stringResource(R.string.phase_ready)
+        SpeedPhase.PING -> stringResource(R.string.phase_latency)
+        SpeedPhase.DOWNLOAD -> stringResource(R.string.phase_download)
+        SpeedPhase.UPLOAD -> stringResource(R.string.phase_upload)
+        SpeedPhase.DONE -> stringResource(R.string.phase_complete)
+        SpeedPhase.ERROR -> stringResource(R.string.phase_error)
     }
 
     LazyColumn(
@@ -99,11 +102,11 @@ fun SpeedTestScreen(modifier: Modifier = Modifier, vm: SpeedTestViewModel = view
         item {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Speed test", style = MaterialTheme.typography.headlineMedium)
-                    Text("Ping - Jitter - Download - Upload", color = scheme.onSurfaceVariant)
+                    Text(stringResource(R.string.speed_title), style = MaterialTheme.typography.headlineMedium)
+                    Text(stringResource(R.string.speed_subtitle), color = scheme.onSurfaceVariant)
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Simulate", style = MaterialTheme.typography.labelSmall, color = scheme.onSurfaceVariant)
+                    Text(stringResource(R.string.simulate), style = MaterialTheme.typography.labelSmall, color = scheme.onSurfaceVariant)
                     Switch(checked = simulated, onCheckedChange = vm::setSimulated, enabled = !running)
                 }
             }
@@ -120,28 +123,28 @@ fun SpeedTestScreen(modifier: Modifier = Modifier, vm: SpeedTestViewModel = view
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    MetricTile("Ping", s.pingMs, "ms", Icons.Filled.Timer, s.phase == SpeedPhase.PING, Modifier.weight(1f))
-                    MetricTile("Jitter", s.jitterMs, "ms", Icons.Filled.GraphicEq, s.phase == SpeedPhase.PING, Modifier.weight(1f))
+                    MetricTile(stringResource(R.string.ping), s.pingMs, "ms", Icons.Filled.Timer, s.phase == SpeedPhase.PING, Modifier.weight(1f))
+                    MetricTile(stringResource(R.string.jitter), s.jitterMs, "ms", Icons.Filled.GraphicEq, s.phase == SpeedPhase.PING, Modifier.weight(1f))
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    MetricTile("Download", s.downMbps, "Mbps", Icons.Filled.ArrowDownward, s.phase == SpeedPhase.DOWNLOAD, Modifier.weight(1f))
-                    MetricTile("Upload", s.upMbps, "Mbps", Icons.Filled.ArrowUpward, s.phase == SpeedPhase.UPLOAD, Modifier.weight(1f))
+                    MetricTile(stringResource(R.string.download), s.downMbps, "Mbps", Icons.Filled.ArrowDownward, s.phase == SpeedPhase.DOWNLOAD, Modifier.weight(1f))
+                    MetricTile(stringResource(R.string.upload), s.upMbps, "Mbps", Icons.Filled.ArrowUpward, s.phase == SpeedPhase.UPLOAD, Modifier.weight(1f))
                 }
             }
         }
         item { StartButton(running = running, onClick = { if (running) vm.stop() else vm.start() }) }
-        s.error?.let { err -> item { Text(err, color = NpColors.Blocked, style = MaterialTheme.typography.bodySmall) } }
+        s.error?.let { err -> item { Text(err.asString(), color = NpColors.Blocked, style = MaterialTheme.typography.bodySmall) } }
 
         item {
             Text(
-                "History",
+                stringResource(R.string.history),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
         if (history.isEmpty()) {
             item {
-                Text("No tests yet - tap GO.", color = scheme.onSurfaceVariant, modifier = Modifier.fillMaxWidth())
+                Text(stringResource(R.string.no_tests), color = scheme.onSurfaceVariant, modifier = Modifier.fillMaxWidth())
             }
         }
         items(history, key = { it.timeMs }) { r ->
@@ -149,10 +152,10 @@ fun SpeedTestScreen(modifier: Modifier = Modifier, vm: SpeedTestViewModel = view
                 Text(formatTime(r.timeMs), style = MaterialTheme.typography.labelMedium, color = scheme.onSurfaceVariant)
                 Spacer(Modifier.height(6.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("v ${fmtSpeed(r.downMbps)}", color = NpColors.Online, fontWeight = FontWeight.SemiBold)
-                    Text("^ ${fmtSpeed(r.upMbps)}", color = NpColors.Paused, fontWeight = FontWeight.SemiBold)
+                    Text("↓ ${fmtSpeed(r.downMbps)}", color = NpColors.Online, fontWeight = FontWeight.SemiBold)
+                    Text("↑ ${fmtSpeed(r.upMbps)}", color = NpColors.Paused, fontWeight = FontWeight.SemiBold)
                     Text("${fmt1(r.pingMs)} ms", style = MaterialTheme.typography.bodyMedium)
-                    Text("j ${fmt1(r.jitterMs)}", style = MaterialTheme.typography.bodyMedium, color = scheme.onSurfaceVariant)
+                    Text("± ${fmt1(r.jitterMs)}", style = MaterialTheme.typography.bodyMedium, color = scheme.onSurfaceVariant)
                 }
             }
         }
@@ -162,7 +165,7 @@ fun SpeedTestScreen(modifier: Modifier = Modifier, vm: SpeedTestViewModel = view
 @Composable
 private fun PhaseSteps(phase: SpeedPhase) {
     val scheme = MaterialTheme.colorScheme
-    val steps = listOf(SpeedPhase.PING to "Ping", SpeedPhase.DOWNLOAD to "Download", SpeedPhase.UPLOAD to "Upload")
+    val steps = listOf(SpeedPhase.PING to stringResource(R.string.ping), SpeedPhase.DOWNLOAD to stringResource(R.string.download), SpeedPhase.UPLOAD to stringResource(R.string.upload))
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         steps.forEach { (p, name) ->
             val done = phase == SpeedPhase.DONE || (phase.ordinal in 1..3 && phase.ordinal > p.ordinal)
@@ -230,8 +233,8 @@ private fun StartButton(running: Boolean, onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         AnimatedContent(running, label = "startIcon") { r ->
-            if (r) Icon(Icons.Filled.Stop, "Stop", tint = scheme.onPrimary, modifier = Modifier.size(36.dp))
-            else Text("GO", color = scheme.onPrimary, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            if (r) Icon(Icons.Filled.Stop, stringResource(R.string.stop), tint = scheme.onPrimary, modifier = Modifier.size(36.dp))
+            else Text(stringResource(R.string.go), color = scheme.onPrimary, fontSize = 26.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.capji.netpulse.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
+import com.capji.netpulse.ui.util.rateLabel
+import com.capji.netpulse.ui.util.vendorLabel
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -119,7 +123,7 @@ fun DeviceCard(
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(device.displayName, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(device.vendor, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, maxLines = 1)
+                    Text(vendorLabel(device.vendor), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, maxLines = 1)
                     Text(
                         "${device.ip}  ${device.mac}",
                         style = MaterialTheme.typography.labelSmall,
@@ -136,15 +140,15 @@ fun DeviceCard(
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 MiniTag(device.connection.label, scheme.secondary, device.connection.icon())
-                Text("v ${formatRate(device.liveDownKbps)}", style = MaterialTheme.typography.labelMedium, color = NpColors.Online)
-                Text("^ ${formatRate(device.liveUpKbps)}", style = MaterialTheme.typography.labelMedium, color = NpColors.Paused)
-                if (device.randomizedMac) MiniTag("Private MAC", NpColors.Throttled)
+                Text("↓ ${formatRate(device.liveDownKbps)}", style = MaterialTheme.typography.labelMedium, color = NpColors.Online)
+                Text("↑ ${formatRate(device.liveUpKbps)}", style = MaterialTheme.typography.labelMedium, color = NpColors.Paused)
+                if (device.randomizedMac) MiniTag(stringResource(R.string.tag_private_mac), NpColors.Throttled)
             }
 
             device.limit?.let { l ->
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Limit  v ${if (l.downKbps == 0) "unlimited" else formatRate(l.downKbps)}  ^ ${if (l.upKbps == 0) "unlimited" else formatRate(l.upKbps)}",
+                    stringResource(R.string.limit_card_fmt, rateLabel(l.downKbps), rateLabel(l.upKbps)),
                     style = MaterialTheme.typography.labelSmall,
                     color = NpColors.Throttled,
                 )
@@ -161,7 +165,7 @@ fun DeviceCard(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    if (q.reached) "Quota reached - ${q.action.label.lowercase()}" else "${formatMb(q.remainingMb)} left of ${formatMb(q.capMb)}",
+                    if (q.reached) stringResource(R.string.quota_reached_action, stringResource(q.action.labelRes)) else stringResource(R.string.quota_left_of, formatMb(q.remainingMb), formatMb(q.capMb)),
                     style = MaterialTheme.typography.labelSmall,
                     color = scheme.onSurfaceVariant,
                 )

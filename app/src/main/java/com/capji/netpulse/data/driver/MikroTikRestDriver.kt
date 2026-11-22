@@ -1,5 +1,8 @@
 package com.capji.netpulse.data.driver
 
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.UiText
+import com.capji.netpulse.domain.model.UiTextException
 import com.capji.netpulse.domain.driver.RouterDriver
 import com.capji.netpulse.domain.identify.DeviceIdentifier
 import com.capji.netpulse.domain.model.Capability
@@ -41,7 +44,7 @@ class MikroTikRestDriver(
 ) : RouterDriver {
 
     override val capabilities = setOf(Capability.BLOCK, Capability.SPEED_LIMIT)
-    override val events: Flow<String> = emptyFlow()
+    override val events: Flow<UiText> = emptyFlow()
 
     private var base = ""
     private var auth = ""
@@ -79,9 +82,9 @@ class MikroTikRestDriver(
                     gateway = profile.host,
                     capabilities = capabilities,
                     notes = listOf(
-                        "Live per-device speed is read from the device's queue; devices without a queue show 0.",
-                        "Quota and timed pause need a RouterOS script/scheduler and are not available in this driver yet.",
-                        "Rules are keyed by IP: a changed DHCP lease or a randomized MAC can bypass them.",
+                        UiText(R.string.mt_note1),
+                        UiText(R.string.mt_note2),
+                        UiText(R.string.mt_note3),
                     ),
                 )
             }
@@ -157,7 +160,7 @@ class MikroTikRestDriver(
 
     private suspend fun io(block: () -> Unit): Result<Unit> = withContext(Dispatchers.IO) { runCatching(block) }
 
-    private fun deviceOf(mac: String) = cache.firstOrNull { it.mac == mac } ?: error("Unknown device")
+    private fun deviceOf(mac: String) = cache.firstOrNull { it.mac == mac } ?: throw UiTextException(UiText(R.string.err_unknown_device))
 
     override suspend fun refresh() = Unit
 
@@ -189,10 +192,10 @@ class MikroTikRestDriver(
     }
 
     override suspend fun setQuota(mac: String, quota: DataQuota?): Result<Unit> =
-        Result.failure(UnsupportedOperationException("Quota isn't supported by the MikroTik driver yet"))
+        Result.failure(UiTextException(UiText(R.string.err_mt_quota)))
 
     override suspend fun pause(mac: String, minutes: Int): Result<Unit> =
-        Result.failure(UnsupportedOperationException("Timed pause isn't supported by the MikroTik driver yet"))
+        Result.failure(UiTextException(UiText(R.string.err_mt_pause)))
 
     override fun disconnect() = Unit
 

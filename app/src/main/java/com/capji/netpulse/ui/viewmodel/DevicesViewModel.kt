@@ -1,5 +1,8 @@
 package com.capji.netpulse.ui.viewmodel
 
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.UiText
+import com.capji.netpulse.domain.model.toUiText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.capji.netpulse.AppGraph
@@ -9,7 +12,7 @@ import com.capji.netpulse.domain.model.DataQuota
 import com.capji.netpulse.domain.model.NetDevice
 import com.capji.netpulse.domain.model.SpeedLimit
 import com.capji.netpulse.ui.util.formatMb
-import com.capji.netpulse.ui.util.formatRate
+import com.capji.netpulse.ui.util.rateArg
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -65,27 +68,30 @@ class DevicesViewModel : ViewModel() {
         }
     }
 
-    fun setBlocked(d: NetDevice, blocked: Boolean) =
-        act("${d.displayName} ${if (blocked) "blocked" else "unblocked"}") { repo.setBlocked(d.mac, blocked) }
+    fun setBlocked(d: NetDevice, blocked: Boolean) = act(
+        UiText(if (blocked) R.string.toast_blocked else R.string.toast_unblocked, listOf(d.displayName)),
+    ) { repo.setBlocked(d.mac, blocked) }
 
     fun setLimit(d: NetDevice, limit: SpeedLimit?) = act(
-        if (limit == null) "Limit removed for ${d.displayName}"
-        else "Limit applied: v ${if (limit.downKbps == 0) "unlimited" else formatRate(limit.downKbps)}  ^ ${if (limit.upKbps == 0) "unlimited" else formatRate(limit.upKbps)}",
+        if (limit == null) UiText(R.string.toast_limit_removed, listOf(d.displayName))
+        else UiText(R.string.toast_limit_applied, listOf(rateArg(limit.downKbps), rateArg(limit.upKbps))),
     ) { repo.setLimit(d.mac, limit) }
 
     fun setQuota(d: NetDevice, quota: DataQuota?) = act(
-        if (quota == null) "Quota removed for ${d.displayName}" else "Quota set: ${formatMb(quota.capMb)} (${quota.action.label.lowercase()})",
+        if (quota == null) UiText(R.string.toast_quota_removed, listOf(d.displayName))
+        else UiText(R.string.toast_quota_set, listOf(formatMb(quota.capMb), UiText(quota.action.labelRes))),
     ) { repo.setQuota(d.mac, quota) }
 
     fun pause(d: NetDevice, minutes: Int) = act(
-        if (minutes <= 0) "${d.displayName} resumed" else "${d.displayName} paused for $minutes min",
+        if (minutes <= 0) UiText(R.string.toast_resumed, listOf(d.displayName))
+        else UiText(R.string.toast_paused, listOf(d.displayName, minutes)),
     ) { repo.pause(d.mac, minutes) }
 
-    private fun act(okMessage: String, block: suspend () -> Result<Unit>) {
+    private fun act(okMessage: UiText, block: suspend () -> Result<Unit>) {
         viewModelScope.launch {
             block()
                 .onSuccess { AppGraph.toast(okMessage) }
-                .onFailure { AppGraph.toast(it.message ?: "Action failed") }
+                .onFailure { AppGraph.toast(it.toUiText()) }
         }
     }
 }

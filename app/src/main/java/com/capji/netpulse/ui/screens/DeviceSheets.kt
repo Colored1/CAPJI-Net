@@ -1,5 +1,7 @@
 package com.capji.netpulse.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -97,16 +99,17 @@ private fun limitIndex(kbps: Int?): Int {
     return LIMIT_STEPS.dropLast(1).indices.minByOrNull { abs(LIMIT_STEPS[it] - kbps) } ?: 0
 }
 
-private fun limitLabel(kbps: Int) = if (kbps == 0) "Unlimited" else formatRate(kbps)
 
 @Composable
 fun LimitSheet(initial: SpeedLimit?, onApply: (SpeedLimit?) -> Unit, onDismiss: () -> Unit) {
     val haptic = LocalHapticFeedback.current
+    val unlimitedText = stringResource(R.string.unlimited)
+    val limitLabel: (Int) -> String = { if (it == 0) unlimitedText else formatRate(it) }
     var down by remember { mutableIntStateOf(limitIndex(initial?.downKbps)) }
     var up by remember { mutableIntStateOf(limitIndex(initial?.upKbps)) }
 
     NpSheet(onDismiss) { close ->
-        Text("Speed limit", style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(R.string.limit_title), style = MaterialTheme.typography.titleLarge)
 
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf(512, 1000, 2000, 5000, 10000, 0).forEach { preset ->
@@ -121,8 +124,8 @@ fun LimitSheet(initial: SpeedLimit?, onApply: (SpeedLimit?) -> Unit, onDismiss: 
             }
         }
 
-        StepSlider("Download", LIMIT_STEPS, down, { down = it }, ::limitLabel)
-        StepSlider("Upload", LIMIT_STEPS, up, { up = it }, ::limitLabel)
+        StepSlider(stringResource(R.string.download), LIMIT_STEPS, down, { down = it }, limitLabel)
+        StepSlider(stringResource(R.string.upload), LIMIT_STEPS, up, { up = it }, limitLabel)
 
         Button(
             onClick = {
@@ -133,7 +136,7 @@ fun LimitSheet(initial: SpeedLimit?, onApply: (SpeedLimit?) -> Unit, onDismiss: 
                 close()
             },
             modifier = Modifier.fillMaxWidth(),
-        ) { Text("Apply limit") }
+        ) { Text(stringResource(R.string.apply_limit)) }
 
         if (initial != null) {
             OutlinedButton(
@@ -143,7 +146,7 @@ fun LimitSheet(initial: SpeedLimit?, onApply: (SpeedLimit?) -> Unit, onDismiss: 
                     close()
                 },
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text("Remove limit") }
+            ) { Text(stringResource(R.string.remove_limit)) }
         }
     }
 }
@@ -164,10 +167,10 @@ fun QuotaSheet(initial: DataQuota?, onApply: (DataQuota?) -> Unit, onDismiss: ()
     var action by remember { mutableStateOf(initial?.action ?: QuotaAction.THROTTLE) }
 
     NpSheet(onDismiss) { close ->
-        Text("Data quota", style = MaterialTheme.typography.titleLarge)
-        StepSlider("Cap", QUOTA_STEPS, idx, { idx = it }) { formatMb(it.toLong()) }
+        Text(stringResource(R.string.quota_title), style = MaterialTheme.typography.titleLarge)
+        StepSlider(stringResource(R.string.cap), QUOTA_STEPS, idx, { idx = it }) { formatMb(it.toLong()) }
 
-        Text("When the cap is reached", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.when_cap_reached), style = MaterialTheme.typography.titleMedium)
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             QuotaAction.entries.forEach { a ->
                 FilterChip(
@@ -176,12 +179,12 @@ fun QuotaSheet(initial: DataQuota?, onApply: (DataQuota?) -> Unit, onDismiss: ()
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         action = a
                     },
-                    label = { Text(a.label) },
+                    label = { Text(stringResource(a.labelRes)) },
                 )
             }
         }
         Text(
-            "Applying starts a fresh counter from 0 MB.",
+            stringResource(R.string.quota_fresh_counter),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -193,7 +196,7 @@ fun QuotaSheet(initial: DataQuota?, onApply: (DataQuota?) -> Unit, onDismiss: ()
                 close()
             },
             modifier = Modifier.fillMaxWidth(),
-        ) { Text("Apply quota") }
+        ) { Text(stringResource(R.string.apply_quota)) }
 
         if (initial != null) {
             OutlinedButton(
@@ -203,7 +206,7 @@ fun QuotaSheet(initial: DataQuota?, onApply: (DataQuota?) -> Unit, onDismiss: ()
                     close()
                 },
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text("Remove quota") }
+            ) { Text(stringResource(R.string.remove_quota)) }
         }
     }
 }

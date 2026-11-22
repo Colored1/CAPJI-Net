@@ -1,5 +1,8 @@
 package com.capji.netpulse.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.asString
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -54,10 +57,10 @@ fun ConnectionPill(state: ConnectionState, modifier: Modifier = Modifier) {
         label = "connectionPill",
     ) { s ->
         val (text, color, pulsing) = when (s) {
-            is ConnectionState.Disconnected -> Triple("Not connected", MaterialTheme.colorScheme.onSurfaceVariant, false)
-            is ConnectionState.Connecting -> Triple("Connecting...", NpColors.Throttled, true)
-            is ConnectionState.Connected -> Triple("Connected - ${s.profile.host}", NpColors.Online, false)
-            is ConnectionState.Failed -> Triple(s.message, NpColors.Blocked, false)
+            is ConnectionState.Disconnected -> Triple(stringResource(R.string.conn_not_connected), MaterialTheme.colorScheme.onSurfaceVariant, false)
+            is ConnectionState.Connecting -> Triple(stringResource(R.string.conn_connecting), NpColors.Throttled, true)
+            is ConnectionState.Connected -> Triple(stringResource(R.string.conn_connected, s.profile.host), NpColors.Online, false)
+            is ConnectionState.Failed -> Triple(s.message.asString(), NpColors.Blocked, false)
         }
         Row(
             Modifier

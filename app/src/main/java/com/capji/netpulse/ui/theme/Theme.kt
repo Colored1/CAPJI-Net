@@ -1,5 +1,6 @@
 package com.capji.netpulse.ui.theme
 
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -51,8 +52,9 @@ private val NpTypography = Typography(
 )
 
 @Composable
-fun NetPulseTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = NpScheme, typography = NpTypography, content = content)
+fun NetPulseTheme(accent: Color = Accent.TEAL.color, content: @Composable () -> Unit) {
+    val scheme = remember(accent) { NpScheme.copy(primary = accent) }
+    MaterialTheme(colorScheme = scheme, typography = NpTypography, content = content)
 }
 
 /** Dark gradient + two soft glows behind everything; cards on top are translucent => glass look. */

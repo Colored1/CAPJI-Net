@@ -1,5 +1,7 @@
 package com.capji.netpulse.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.clickable
@@ -71,8 +73,8 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
         Stagger(0) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 RadarPulse(scanning = connecting, deviceCount = 0, size = 150.dp)
-                Text("CAPJI Net", style = MaterialTheme.typography.headlineMedium)
-                Text("Control every device on your Wi-Fi", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
+                Text(stringResource(R.string.tagline), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         Stagger(1) { ConnectionPill(conn) }
@@ -80,7 +82,7 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
         if (profiles.isNotEmpty()) {
             Stagger(2) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Saved routers", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.saved_routers), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         profiles.forEach { p ->
                             InputChip(
@@ -89,7 +91,7 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
                                 label = { Text(p.name) },
                                 trailingIcon = {
                                     Icon(
-                                        Icons.Filled.Close, "Remove",
+                                        Icons.Filled.Close, stringResource(R.string.cd_remove),
                                         Modifier.size(16.dp).clickable { vm.delete(p) },
                                     )
                                 },
@@ -102,22 +104,22 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
 
         Stagger(3) {
             GlassCard(Modifier.fillMaxWidth()) {
-                Text("Router type", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.router_type), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     RouterType.entries.forEach { t ->
-                        FilterChip(selected = vm.type == t, onClick = { vm.type = t }, label = { Text(t.title) })
+                        FilterChip(selected = vm.type == t, onClick = { vm.type = t }, label = { Text(stringResource(t.titleRes)) })
                     }
                 }
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = vm.host,
                     onValueChange = { vm.host = it },
-                    label = { Text("Gateway / router IP") },
+                    label = { Text(stringResource(R.string.gateway_label)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                     trailingIcon = {
-                        IconButton(onClick = vm::detectGateway) { Icon(Icons.Filled.MyLocation, "Detect gateway") }
+                        IconButton(onClick = vm::detectGateway) { Icon(Icons.Filled.MyLocation, stringResource(R.string.cd_detect_gateway)) }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -125,7 +127,7 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
                 OutlinedTextField(
                     value = vm.user,
                     onValueChange = { vm.user = it },
-                    label = { Text("Admin username") },
+                    label = { Text(stringResource(R.string.admin_user)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -133,20 +135,20 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
                 OutlinedTextField(
                     value = vm.pass,
                     onValueChange = { vm.pass = it },
-                    label = { Text("Admin password") },
+                    label = { Text(stringResource(R.string.admin_pass)) },
                     singleLine = true,
                     visualTransformation = if (showPass) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     trailingIcon = {
                         IconButton(onClick = { showPass = !showPass }) {
-                            Icon(if (showPass) Icons.Filled.VisibilityOff else Icons.Filled.Visibility, "Toggle password")
+                            Icon(if (showPass) Icons.Filled.VisibilityOff else Icons.Filled.Visibility, stringResource(R.string.cd_toggle_pass))
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = vm.remember, onCheckedChange = { vm.remember = it })
-                    Text("Save router profile (password is never stored)", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.save_profile), style = MaterialTheme.typography.bodySmall)
                 }
                 Spacer(Modifier.height(8.dp))
                 Button(
@@ -159,27 +161,25 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = LocalContentColor.current)
                                 Spacer(Modifier.width(10.dp))
-                                Text("Connecting...")
+                                Text(stringResource(R.string.conn_connecting))
                             }
                         } else {
-                            Text("Connect")
+                            Text(stringResource(R.string.connect))
                         }
                     }
                 }
                 TextButton(onClick = vm::demo, enabled = !connecting, modifier = Modifier.fillMaxWidth()) {
-                    Text("Try the demo router (no hardware needed)")
+                    Text(stringResource(R.string.try_demo))
                 }
             }
         }
 
         Stagger(4) {
             GlassCard(Modifier.fillMaxWidth()) {
-                Text("How NetPulse talks to your router", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.how_title), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "Your phone only controls what the router itself exposes (REST API / ubus / web session). " +
-                        "Android can discover devices on the LAN, but it cannot block or throttle other devices on its own - " +
-                        "the router must enforce the rules.",
+                    stringResource(R.string.how_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

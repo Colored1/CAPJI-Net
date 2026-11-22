@@ -5,6 +5,11 @@ import android.content.Context
 import com.capji.netpulse.core.GatewayDetector
 import com.capji.netpulse.data.ProfileStore
 import com.capji.netpulse.data.RouterRepository
+import com.capji.netpulse.data.SettingsStore
+import com.capji.netpulse.domain.model.RouterProfile
+import com.capji.netpulse.domain.model.UiText
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.capji.netpulse.data.driver.MikroTikRestDriver
 import com.capji.netpulse.data.driver.MockRouterDriver
 import com.capji.netpulse.data.driver.UnsupportedDriver
@@ -33,21 +38,30 @@ object AppGraph {
         when (type) {
             RouterType.DEMO -> MockRouterDriver()
             RouterType.MIKROTIK -> MikroTikRestDriver()
-            else -> UnsupportedDriver(type.title)
+            else -> UnsupportedDriver(type.shortName)
         }
     }
 
-    val toasts = MutableSharedFlow<String>(extraBufferCapacity = 8)
+    val toasts = MutableSharedFlow<UiText>(extraBufferCapacity = 8)
+    lateinit var settings: SettingsStore
+        private set
+    val profilesState = MutableStateFlow<List<RouterProfile>>(emptyList())
     val speedHistory = MutableStateFlow<List<SpeedRecord>>(emptyList())
 
     fun init(context: Context) {
         appContext = context.applicationContext
         profiles = ProfileStore(appContext)
+        settings = SettingsStore(appContext)
+        profilesState.value = profiles.load()
+    }
+
+    fun clearProfiles() {
+        profilesState.value = profiles.clear()
     }
 
     fun detectGateway(): String? = GatewayDetector.detect(appContext)
 
-    fun toast(message: String) {
+    fun toast(message: UiText) {
         toasts.tryEmit(message)
     }
 }
@@ -56,5 +70,11 @@ class NetPulseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         AppGraph.init(this)
+        // First launch: Arabic by default. After that the user's choice is kept by AppCompat.
+        val prefs = getSharedPreferences("boot", MODE_PRIVATE)
+        if (!prefs.getBoolean("lang_init", false)) {
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("ar"))
+            prefs.edit().putBoolean("lang_init", true).apply()
+        }
     }
 }

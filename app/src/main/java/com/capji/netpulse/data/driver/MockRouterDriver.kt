@@ -1,5 +1,8 @@
 package com.capji.netpulse.data.driver
 
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.UiText
+import com.capji.netpulse.domain.model.UiTextException
 import com.capji.netpulse.domain.driver.RouterDriver
 import com.capji.netpulse.domain.identify.DeviceIdentifier
 import com.capji.netpulse.domain.model.Capability
@@ -30,8 +33,8 @@ class MockRouterDriver : RouterDriver {
 
     override val capabilities = setOf(Capability.BLOCK, Capability.SPEED_LIMIT, Capability.QUOTA, Capability.PAUSE)
 
-    private val _events = MutableSharedFlow<String>(extraBufferCapacity = 8)
-    override val events: Flow<String> get() = _events
+    private val _events = MutableSharedFlow<UiText>(extraBufferCapacity = 8)
+    override val events: Flow<UiText> get() = _events
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val devices = MutableStateFlow<List<NetDevice>>(emptyList())
@@ -41,19 +44,19 @@ class MockRouterDriver : RouterDriver {
 
     override suspend fun connect(profile: RouterProfile, password: String): Result<RouterInfo> {
         delay(1300)
-        if (password.isBlank()) return Result.failure(IllegalArgumentException("Wrong username or password"))
+        if (password.isBlank()) return Result.failure(UiTextException(UiText(R.string.err_wrong_credentials)))
         devices.value = seed()
         startTicker()
         return Result.success(
             RouterInfo(
-                model = "NetPulse Demo Router",
+                model = "CAPJI Net Demo Router",
                 firmware = "sim-1.0",
                 gateway = profile.host.ifBlank { "192.168.88.1" },
                 capabilities = capabilities,
                 notes = listOf(
-                    "Demo router: every number is simulated (usage runs ~10x faster so quotas fill quickly).",
-                    "On real routers without native quota support, caps are counted by NetPulse and only enforced while the app/service runs.",
-                    "Devices with private (randomized) MACs can reappear as new devices and escape MAC-based rules.",
+                    UiText(R.string.mock_note1),
+                    UiText(R.string.mock_note2),
+                    UiText(R.string.mock_note3),
                 ),
             ),
         )
@@ -138,9 +141,9 @@ class MockRouterDriver : RouterDriver {
             if (!q.reached && newQuota.reached) {
                 _events.tryEmit(
                     when (q.action) {
-                        QuotaAction.BLOCK -> "${d.displayName} hit its quota and was blocked"
-                        QuotaAction.THROTTLE -> "${d.displayName} hit its quota and was throttled"
-                        QuotaAction.NOTIFY -> "${d.displayName} reached its data quota"
+                        QuotaAction.BLOCK -> UiText(R.string.evt_quota_block, listOf(d.displayName))
+                        QuotaAction.THROTTLE -> UiText(R.string.evt_quota_throttle, listOf(d.displayName))
+                        QuotaAction.NOTIFY -> UiText(R.string.evt_quota_notify, listOf(d.displayName))
                     },
                 )
             }

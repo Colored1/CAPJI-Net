@@ -1,5 +1,8 @@
 package com.capji.netpulse.ui.components
 
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
@@ -46,14 +49,14 @@ import com.capji.netpulse.domain.model.DeviceKind
 import com.capji.netpulse.domain.model.DeviceStatus
 import com.capji.netpulse.ui.theme.NpColors
 
-data class StatusVisual(val label: String, val color: Color, val icon: ImageVector)
+data class StatusVisual(@StringRes val labelRes: Int, val color: Color, val icon: ImageVector)
 
 fun DeviceStatus.visual(): StatusVisual = when (this) {
-    DeviceStatus.ONLINE -> StatusVisual("Online", NpColors.Online, Icons.Filled.Wifi)
-    DeviceStatus.BLOCKED -> StatusVisual("Blocked", NpColors.Blocked, Icons.Filled.Block)
-    DeviceStatus.THROTTLED -> StatusVisual("Limited", NpColors.Throttled, Icons.Filled.Speed)
-    DeviceStatus.QUOTA_CAPPED -> StatusVisual("Quota reached", NpColors.Quota, Icons.Filled.DataUsage)
-    DeviceStatus.PAUSED -> StatusVisual("Paused", NpColors.Paused, Icons.Filled.PauseCircle)
+    DeviceStatus.ONLINE -> StatusVisual(R.string.status_online, NpColors.Online, Icons.Filled.Wifi)
+    DeviceStatus.BLOCKED -> StatusVisual(R.string.status_blocked, NpColors.Blocked, Icons.Filled.Block)
+    DeviceStatus.THROTTLED -> StatusVisual(R.string.status_limited, NpColors.Throttled, Icons.Filled.Speed)
+    DeviceStatus.QUOTA_CAPPED -> StatusVisual(R.string.status_quota_reached, NpColors.Quota, Icons.Filled.DataUsage)
+    DeviceStatus.PAUSED -> StatusVisual(R.string.status_paused, NpColors.Paused, Icons.Filled.PauseCircle)
 }
 
 fun DeviceKind.icon(): ImageVector = when (this) {
@@ -91,7 +94,7 @@ fun StatusBadge(status: DeviceStatus, modifier: Modifier = Modifier) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(v.icon, contentDescription = null, tint = color, modifier = Modifier.size(14.dp))
                 Spacer(Modifier.width(6.dp))
-                Text(v.label, color = color, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(v.labelRes), color = color, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
             }
         }
     }

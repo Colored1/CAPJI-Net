@@ -1,5 +1,8 @@
 package com.capji.netpulse.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.asString
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,24 +40,24 @@ fun RouterScreen(conn: ConnectionState.Connected, onDisconnect: () -> Unit, modi
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text("Router", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.router_title), style = MaterialTheme.typography.headlineMedium)
 
         Stagger(0) {
             GlassCard(Modifier.fillMaxWidth()) {
                 ConnectionPill(conn)
                 Spacer(Modifier.height(12.dp))
-                InfoLine("Profile", conn.profile.name)
-                InfoLine("Driver", conn.profile.type.title)
-                InfoLine("Model", conn.info.model)
-                InfoLine("Firmware", conn.info.firmware)
-                InfoLine("Gateway", conn.info.gateway)
-                InfoLine("User", conn.profile.username)
+                InfoLine(stringResource(R.string.lbl_profile), conn.profile.name)
+                InfoLine(stringResource(R.string.lbl_driver), stringResource(conn.profile.type.titleRes))
+                InfoLine(stringResource(R.string.lbl_model), conn.info.model)
+                InfoLine(stringResource(R.string.lbl_firmware), conn.info.firmware)
+                InfoLine(stringResource(R.string.lbl_gateway), conn.info.gateway)
+                InfoLine(stringResource(R.string.lbl_user), conn.profile.username)
             }
         }
 
         Stagger(1) {
             GlassCard(Modifier.fillMaxWidth()) {
-                Text("What this router can enforce", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.router_can_enforce), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(8.dp))
                 Capability.entries.forEach { c ->
                     val ok = c in conn.info.capabilities
@@ -66,7 +69,7 @@ fun RouterScreen(conn: ConnectionState.Connected, onDisconnect: () -> Unit, modi
                             modifier = Modifier.size(20.dp),
                         )
                         Spacer(Modifier.width(10.dp))
-                        Text(c.label, color = if (ok) scheme.onSurface else scheme.onSurfaceVariant)
+                        Text(stringResource(c.labelRes), color = if (ok) scheme.onSurface else scheme.onSurfaceVariant)
                     }
                 }
             }
@@ -74,16 +77,16 @@ fun RouterScreen(conn: ConnectionState.Connected, onDisconnect: () -> Unit, modi
 
         Stagger(2) {
             GlassCard(Modifier.fillMaxWidth()) {
-                Text("Good to know", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.good_to_know), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(6.dp))
                 conn.info.notes.forEach {
-                    Text("-  $it", style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 3.dp))
+                    Text("•  ${it.asString()}", style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 3.dp))
                 }
             }
         }
 
         Stagger(3) {
-            OutlinedButton(onClick = onDisconnect, modifier = Modifier.fillMaxWidth()) { Text("Disconnect") }
+            OutlinedButton(onClick = onDisconnect, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.disconnect)) }
         }
     }
 }

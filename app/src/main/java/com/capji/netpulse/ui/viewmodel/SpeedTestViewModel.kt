@@ -1,5 +1,7 @@
 package com.capji.netpulse.ui.viewmodel
 
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.UiText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.capji.netpulse.AppGraph
@@ -20,7 +22,7 @@ class SpeedTestViewModel : ViewModel() {
     private val _state = MutableStateFlow(SpeedState())
     val state: StateFlow<SpeedState> = _state.asStateFlow()
 
-    private val _simulated = MutableStateFlow(false)
+    private val _simulated = MutableStateFlow(AppGraph.settings.defaultSimulate.value)
     val simulated: StateFlow<Boolean> = _simulated.asStateFlow()
 
     val history: StateFlow<List<SpeedRecord>> = AppGraph.speedHistory
@@ -48,7 +50,7 @@ class SpeedTestViewModel : ViewModel() {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _state.value = SpeedState(phase = SpeedPhase.ERROR, error = e.message ?: "Test failed - check your connection or use Simulate")
+                _state.value = SpeedState(phase = SpeedPhase.ERROR, error = e.message?.takeIf { it.isNotBlank() }?.let { UiText(raw = it) } ?: UiText(R.string.speed_error_default))
             }
         }
     }

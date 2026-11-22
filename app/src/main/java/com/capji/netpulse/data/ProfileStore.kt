@@ -32,6 +32,8 @@ class ProfileStore(context: Context) {
 
     fun delete(id: String): List<RouterProfile> = persist(load().filterNot { it.id == id })
 
+    fun clear(): List<RouterProfile> = persist(emptyList())
+
     private fun persist(list: List<RouterProfile>): List<RouterProfile> {
         val a = JSONArray()
         list.forEach {

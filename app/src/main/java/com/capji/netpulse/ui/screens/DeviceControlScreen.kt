@@ -1,5 +1,9 @@
 package com.capji.netpulse.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
+import com.capji.netpulse.ui.util.rateLabel
+import com.capji.netpulse.ui.util.vendorLabel
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -98,8 +102,8 @@ fun DeviceControlScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { vm.select(null) }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
-            Text("Device control", style = MaterialTheme.typography.titleLarge)
+            IconButton(onClick = { vm.select(null) }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cd_back)) }
+            Text(stringResource(R.string.ctl_title), style = MaterialTheme.typography.titleLarge)
         }
 
         // ---- Header: shares bounds + avatar with the list card -------------------------------
@@ -122,26 +126,25 @@ fun DeviceControlScreen(
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text(device.displayName, style = MaterialTheme.typography.titleLarge)
-                        Text(device.vendor, color = scheme.onSurfaceVariant)
+                        Text(vendorLabel(device.vendor), color = scheme.onSurfaceVariant)
                         Spacer(Modifier.height(6.dp))
                         StatusBadge(device.status)
                     }
                 }
                 Spacer(Modifier.height(14.dp))
-                InfoRow("Hostname", device.hostname.ifBlank { "-" })
-                InfoRow("IP address", device.ip)
-                InfoRow("MAC address", device.mac, mono = true)
-                InfoRow("Connection", device.connection.label)
-                InfoRow("Live", "v ${formatRate(device.liveDownKbps)}   ^ ${formatRate(device.liveUpKbps)}")
-                InfoRow("Session", "v ${formatMb(device.sessionDownMb)}   ^ ${formatMb(device.sessionUpMb)}")
+                InfoRow(stringResource(R.string.lbl_hostname), device.hostname.ifBlank { "-" })
+                InfoRow(stringResource(R.string.lbl_ip), device.ip)
+                InfoRow(stringResource(R.string.lbl_mac), device.mac, mono = true)
+                InfoRow(stringResource(R.string.lbl_connection), device.connection.label)
+                InfoRow(stringResource(R.string.lbl_live), "↓ ${formatRate(device.liveDownKbps)}   ↑ ${formatRate(device.liveUpKbps)}")
+                InfoRow(stringResource(R.string.lbl_session), "↓ ${formatMb(device.sessionDownMb)}   ↑ ${formatMb(device.sessionUpMb)}")
             }
         }
 
         if (device.randomizedMac) {
             Stagger(0) {
                 Note(
-                    "This device uses a private (randomized) MAC address. Brand/model detection falls back to the hostname, " +
-                        "and rules may stop working if it rotates its MAC or reconnects as a \"new\" device.",
+                    stringResource(R.string.note_private_mac),
                 )
             }
         }
@@ -153,9 +156,9 @@ fun DeviceControlScreen(
                     SectionIcon(Icons.Filled.Block, NpColors.Blocked)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Block internet", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.block_title), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            if (device.blocked) "This device cannot reach the internet" else "Cut this device off instantly",
+                            if (device.blocked) stringResource(R.string.block_on_desc) else stringResource(R.string.block_off_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = scheme.onSurfaceVariant,
                         )
@@ -183,20 +186,20 @@ fun DeviceControlScreen(
                     SectionIcon(Icons.Filled.Speed, NpColors.Throttled)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Speed limit", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.limit_title), style = MaterialTheme.typography.titleMedium)
                         val l = device.limit
                         Text(
-                            if (l == null) "Unlimited"
-                            else "v ${if (l.downKbps == 0) "unlimited" else formatRate(l.downKbps)}   ^ ${if (l.upKbps == 0) "unlimited" else formatRate(l.upKbps)}",
+                            if (l == null) stringResource(R.string.unlimited)
+                            else stringResource(R.string.limit_line_fmt, rateLabel(l.downKbps), rateLabel(l.upKbps)),
                             style = MaterialTheme.typography.bodySmall,
                             color = if (l == null) scheme.onSurfaceVariant else NpColors.Throttled,
                         )
                     }
                     FilledTonalButton(onClick = { showLimit = true }, enabled = Capability.SPEED_LIMIT in caps) {
-                        Text(if (device.limit == null) "Set" else "Edit")
+                        Text(if (device.limit == null) stringResource(R.string.set) else stringResource(R.string.edit))
                     }
                 }
-                if (Capability.SPEED_LIMIT !in caps) UnsupportedHint("This router driver cannot set per-device speed limits.")
+                if (Capability.SPEED_LIMIT !in caps) UnsupportedHint(stringResource(R.string.limit_unsupported))
             }
         }
 
@@ -207,15 +210,15 @@ fun DeviceControlScreen(
                     SectionIcon(Icons.Filled.DataUsage, NpColors.Quota)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Data quota", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.quota_title), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            device.quota?.let { "Cap ${formatMb(it.capMb)} - when reached: ${it.action.label.lowercase()}" } ?: "No data cap",
+                            device.quota?.let { stringResource(R.string.quota_cap_line, formatMb(it.capMb), stringResource(it.action.labelRes)) } ?: stringResource(R.string.quota_none),
                             style = MaterialTheme.typography.bodySmall,
                             color = scheme.onSurfaceVariant,
                         )
                     }
                     FilledTonalButton(onClick = { showQuota = true }, enabled = Capability.QUOTA in caps) {
-                        Text(if (device.quota == null) "Set" else "Edit")
+                        Text(if (device.quota == null) stringResource(R.string.set) else stringResource(R.string.edit))
                     }
                 }
                 device.quota?.let { q ->
@@ -229,16 +232,16 @@ fun DeviceControlScreen(
                     )
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        if (q.reached) "Quota reached - ${formatMb(q.usedMb)} used"
-                        else "${formatMb(q.usedMb)} used - ${formatMb(q.remainingMb)} remaining",
+                        if (q.reached) stringResource(R.string.quota_used_reached, formatMb(q.usedMb))
+                        else stringResource(R.string.quota_used_remaining, formatMb(q.usedMb), formatMb(q.remainingMb)),
                         style = MaterialTheme.typography.labelMedium,
                         color = scheme.onSurfaceVariant,
                     )
                 }
                 if (Capability.QUOTA !in caps) {
-                    UnsupportedHint("This router firmware has no native quota. Enforcement would need a router-side script.")
+                    UnsupportedHint(stringResource(R.string.quota_unsupported))
                 } else {
-                    UnsupportedHint("Usage is counted from router counters. Routers without native quotas only enforce while NetPulse runs.")
+                    UnsupportedHint(stringResource(R.string.quota_hint))
                 }
             }
         }
@@ -250,10 +253,10 @@ fun DeviceControlScreen(
                     SectionIcon(Icons.Filled.Timer, NpColors.Paused)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Pause internet", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.pause_title), style = MaterialTheme.typography.titleMedium)
                         val until = device.pausedUntilMs
                         if (until == null) {
-                            Text("Resumes automatically", style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+                            Text(stringResource(R.string.pause_auto), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
                         } else {
                             val now by produceState(System.currentTimeMillis(), until) {
                                 while (true) {
@@ -262,7 +265,7 @@ fun DeviceControlScreen(
                                 }
                             }
                             Text(
-                                "Resumes in ${formatCountdown((until - now) / 1000)}",
+                                stringResource(R.string.pause_resumes_in, formatCountdown((until - now) / 1000)),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = NpColors.Paused,
                             )
@@ -272,23 +275,23 @@ fun DeviceControlScreen(
                         TextButton(onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             vm.pause(device, 0)
-                        }) { Text("Resume now") }
+                        }) { Text(stringResource(R.string.resume_now)) }
                     }
                 }
                 Spacer(Modifier.height(10.dp))
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(15 to "15 min", 30 to "30 min", 60 to "1 hour", 120 to "2 hours").forEach { (min, label) ->
+                    listOf(15 to R.string.dur_15m, 30 to R.string.dur_30m, 60 to R.string.dur_1h, 120 to R.string.dur_2h).forEach { (min, labelRes) ->
                         AssistChip(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 vm.pause(device, min)
                             },
-                            label = { Text(label) },
+                            label = { Text(stringResource(labelRes)) },
                             enabled = Capability.PAUSE in caps,
                         )
                     }
                 }
-                if (Capability.PAUSE !in caps) UnsupportedHint("This router driver cannot schedule a timed pause.")
+                if (Capability.PAUSE !in caps) UnsupportedHint(stringResource(R.string.pause_unsupported))
             }
         }
         Spacer(Modifier.height(24.dp))
@@ -297,16 +300,16 @@ fun DeviceControlScreen(
     if (confirmBlock) {
         AlertDialog(
             onDismissRequest = { confirmBlock = false },
-            title = { Text("Block ${device.displayName}?") },
-            text = { Text("It will lose internet access immediately until you unblock it.") },
+            title = { Text(stringResource(R.string.block_dialog_title, device.displayName)) },
+            text = { Text(stringResource(R.string.block_dialog_text)) },
             confirmButton = {
                 Button(onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     vm.setBlocked(device, true)
                     confirmBlock = false
-                }) { Text("Block") }
+                }) { Text(stringResource(R.string.block)) }
             },
-            dismissButton = { TextButton(onClick = { confirmBlock = false }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { confirmBlock = false }) { Text(stringResource(R.string.cancel)) } },
         )
     }
     if (showLimit) {

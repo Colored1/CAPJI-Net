@@ -1,5 +1,6 @@
 package com.capji.netpulse.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.Router
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +42,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.capji.netpulse.AppGraph
+import com.capji.netpulse.R
+import com.capji.netpulse.ui.screens.SettingsScreen
+import com.capji.netpulse.ui.theme.Accent
+import com.capji.netpulse.ui.theme.NoHaptic
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.Alignment
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import com.capji.netpulse.domain.model.ConnectionState
 import com.capji.netpulse.ui.screens.DevicesScreen
 import com.capji.netpulse.ui.screens.HomeScreen
@@ -51,18 +66,30 @@ import com.capji.netpulse.ui.theme.NpBackground
 import com.capji.netpulse.ui.viewmodel.DevicesViewModel
 import kotlinx.coroutines.flow.collectLatest
 
-enum class NavTab(val label: String, val icon: ImageVector) {
-    HOME("Home", Icons.Filled.Dashboard),
-    DEVICES("Devices", Icons.Filled.Devices),
-    SPEED("Speed", Icons.Filled.Speed),
-    ROUTER("Router", Icons.Filled.Router),
+enum class NavTab(@StringRes val labelRes: Int, val icon: ImageVector) {
+    HOME(R.string.nav_home, Icons.Filled.Dashboard),
+    DEVICES(R.string.nav_devices, Icons.Filled.Devices),
+    SPEED(R.string.nav_speed, Icons.Filled.Speed),
+    ROUTER(R.string.nav_router, Icons.Filled.Router),
+    SETTINGS(R.string.nav_settings, Icons.Filled.Settings),
 }
 
 @Composable
 fun NetPulseRoot() {
-    NetPulseTheme {
+    val accentArgb by AppGraph.settings.accent.collectAsStateWithLifecycle()
+    val hapticsOn by AppGraph.settings.haptics.collectAsStateWithLifecycle()
+    val keepOn by AppGraph.settings.keepScreenOn.collectAsStateWithLifecycle()
+    val view = LocalView.current
+    DisposableEffect(keepOn) {
+        view.keepScreenOn = keepOn
+        onDispose { view.keepScreenOn = false }
+    }
+    val realHaptic = LocalHapticFeedback.current
+    CompositionLocalProvider(LocalHapticFeedback provides (if (hapticsOn) realHaptic else NoHaptic)) {
+    NetPulseTheme(accent = Accent.entries.getOrElse(accentArgb) { Accent.TEAL }.color) {
         NpBackground {
             val haptic = LocalHapticFeedback.current
+            val ctx = LocalContext.current
             val conn by AppGraph.repo.connection.collectAsStateWithLifecycle()
             val connected = conn as? ConnectionState.Connected
             // keep the last Connected value so the main UI can finish its exit animation after disconnect
@@ -70,7 +97,7 @@ fun NetPulseRoot() {
             if (connected != null) last.value = connected
 
             val snackbar = remember { SnackbarHostState() }
-            LaunchedEffect(Unit) { AppGraph.toasts.collectLatest { snackbar.showSnackbar(it) } }
+            LaunchedEffect(Unit) { AppGraph.toasts.collectLatest { snackbar.showSnackbar(it.resolve(ctx)) } }
 
             var tab by rememberSaveable { mutableStateOf(NavTab.HOME) }
             val devicesVm: DevicesViewModel = viewModel()
@@ -92,8 +119,8 @@ fun NetPulseRoot() {
                                         if (tab != t) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         tab = t
                                     },
-                                    icon = { Icon(t.icon, contentDescription = t.label) },
-                                    label = { Text(t.label) },
+                                    icon = { Icon(t.icon, contentDescription = stringResource(t.labelRes)) },
+                                    label = { Text(stringResource(t.labelRes)) },
                                 )
                             }
                         }
@@ -108,7 +135,19 @@ fun NetPulseRoot() {
                 ) { isConnected ->
                     val info = last.value
                     if (!isConnected || info == null) {
-                        LoginScreen()
+                        var showSettings by rememberSaveable { mutableStateOf(false) }
+                        Box {
+                            if (showSettings) SettingsScreen() else LoginScreen()
+                            IconButton(
+                                onClick = { showSettings = !showSettings },
+                                modifier = Modifier.align(Alignment.TopEnd),
+                            ) {
+                                Icon(
+                                    if (showSettings) Icons.Filled.ArrowBack else Icons.Filled.Settings,
+                                    contentDescription = stringResource(R.string.nav_settings),
+                                )
+                            }
+                        }
                     } else {
                         AnimatedContent(
                             targetState = tab,
@@ -127,6 +166,7 @@ fun NetPulseRoot() {
                                 )
                                 NavTab.DEVICES -> DevicesScreen(devicesVm)
                                 NavTab.SPEED -> SpeedTestScreen()
+                                NavTab.SETTINGS -> SettingsScreen()
                                 NavTab.ROUTER -> RouterScreen(
                                     conn = info,
                                     onDisconnect = {
@@ -141,4 +181,5 @@ fun NetPulseRoot() {
             }
         }
     }
+}
 }

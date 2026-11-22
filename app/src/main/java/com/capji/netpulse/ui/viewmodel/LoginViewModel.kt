@@ -21,8 +21,7 @@ class LoginViewModel : ViewModel() {
     var pass by mutableStateOf("")
     var remember by mutableStateOf(true)
 
-    private val _profiles = MutableStateFlow(AppGraph.profiles.load())
-    val profiles: StateFlow<List<RouterProfile>> = _profiles.asStateFlow()
+    val profiles: StateFlow<List<RouterProfile>> = AppGraph.profilesState
 
     val connection: StateFlow<ConnectionState> = AppGraph.repo.connection
 
@@ -42,19 +41,19 @@ class LoginViewModel : ViewModel() {
     }
 
     fun delete(p: RouterProfile) {
-        _profiles.value = AppGraph.profiles.delete(p.id)
+        AppGraph.profilesState.value = AppGraph.profiles.delete(p.id)
     }
 
     fun connect() {
         val h = host.trim()
         val profile = RouterProfile(
             id = "${type.name}-$h-${user.trim()}",
-            name = "${type.title.substringBefore(" (").substringBefore(" -")} - $h",
+            name = "${type.shortName} - $h",
             type = type,
             host = h,
             username = user.trim(),
         )
-        if (remember) _profiles.value = AppGraph.profiles.save(profile)
+        if (remember) AppGraph.profilesState.value = AppGraph.profiles.save(profile)
         viewModelScope.launch { AppGraph.repo.connect(profile, pass) }
     }
 

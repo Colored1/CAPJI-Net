@@ -1,5 +1,7 @@
 package com.capji.netpulse.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import com.capji.netpulse.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -86,7 +88,7 @@ fun HomeScreen(
         item {
             Stagger(0) {
                 Column {
-                    Text("CAPJI Net", style = MaterialTheme.typography.headlineMedium)
+                    Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
                     Text(routerName, color = scheme.onSurfaceVariant)
                 }
             }
@@ -97,31 +99,31 @@ fun HomeScreen(
                     RadarPulse(scanning = ui.scanning, deviceCount = devices.size)
                     Spacer(Modifier.height(8.dp))
                     AnimatedContent(
-                        targetState = if (ui.scanning) "Scanning network..." else "$online devices online",
+                        targetState = if (ui.scanning) stringResource(R.string.home_scanning_network) else stringResource(R.string.home_devices_online, online),
                         transitionSpec = { (slideInVertically { it / 2 } + fadeIn()) togetherWith (slideOutVertically { -it / 2 } + fadeOut()) },
                         label = "radarText",
                     ) { Text(it, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center) }
                     Spacer(Modifier.height(10.dp))
-                    FilledTonalButton(onClick = vm::rescan, enabled = !ui.scanning) { Text("Scan network") }
+                    FilledTonalButton(onClick = vm::rescan, enabled = !ui.scanning) { Text(stringResource(R.string.scan_network)) }
                 }
             }
         }
         item {
             Stagger(2) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    StatTile("Online", online, NpColors.Online, Icons.Filled.Wifi, Modifier.weight(1f))
-                    StatTile("Limited", limited, NpColors.Throttled, Icons.Filled.Speed, Modifier.weight(1f))
-                    StatTile("Blocked", blocked, NpColors.Blocked, Icons.Filled.Block, Modifier.weight(1f))
+                    StatTile(stringResource(R.string.status_online), online, NpColors.Online, Icons.Filled.Wifi, Modifier.weight(1f))
+                    StatTile(stringResource(R.string.status_limited), limited, NpColors.Throttled, Icons.Filled.Speed, Modifier.weight(1f))
+                    StatTile(stringResource(R.string.status_blocked), blocked, NpColors.Blocked, Icons.Filled.Block, Modifier.weight(1f))
                 }
             }
         }
         item {
             Stagger(3) {
                 GlassCard(Modifier.fillMaxWidth()) {
-                    Text("Live traffic", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.live_traffic), style = MaterialTheme.typography.titleMedium)
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Text("v ${formatRate(totalDown)}", color = NpColors.Online, style = MaterialTheme.typography.titleLarge)
-                        Text("^ ${formatRate(totalUp)}", color = NpColors.Paused, style = MaterialTheme.typography.titleLarge)
+                        Text("↓ ${formatRate(totalDown)}", color = NpColors.Online, style = MaterialTheme.typography.titleLarge)
+                        Text("↑ ${formatRate(totalUp)}", color = NpColors.Paused, style = MaterialTheme.typography.titleLarge)
                     }
                     Spacer(Modifier.height(8.dp))
                     Sparkline(ui.throughput, Modifier.fillMaxWidth().height(64.dp), scheme.primary)
@@ -129,7 +131,7 @@ fun HomeScreen(
             }
         }
         item {
-            Stagger(4) { Text("Top consumers", style = MaterialTheme.typography.titleMedium) }
+            Stagger(4) { Text(stringResource(R.string.top_consumers), style = MaterialTheme.typography.titleMedium) }
         }
         items(top, key = { it.id }) { d ->
             val maxKbps = (top.maxOfOrNull { it.liveDownKbps } ?: 1).coerceAtLeast(1)
@@ -157,7 +159,7 @@ fun HomeScreen(
             }
         }
         item {
-            OutlinedButton(onClick = onSpeedTest, modifier = Modifier.fillMaxWidth()) { Text("Run speed test") }
+            OutlinedButton(onClick = onSpeedTest, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.run_speed_test)) }
         }
     }
 }

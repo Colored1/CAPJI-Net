@@ -1,5 +1,6 @@
 package com.capji.netpulse.domain.driver
 
+import com.capji.netpulse.domain.model.UiText
 import com.capji.netpulse.domain.model.Capability
 import com.capji.netpulse.domain.model.DataQuota
 import com.capji.netpulse.domain.model.NetDevice
@@ -16,7 +17,7 @@ interface RouterDriver {
     val capabilities: Set<Capability>
 
     /** Human-readable notifications from the driver (e.g. "quota reached"). */
-    val events: Flow<String>
+    val events: Flow<UiText>
 
     suspend fun connect(profile: RouterProfile, password: String): Result<RouterInfo>
 

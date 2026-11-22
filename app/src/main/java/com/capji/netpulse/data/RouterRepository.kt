@@ -1,5 +1,8 @@
 package com.capji.netpulse.data
 
+import com.capji.netpulse.R
+import com.capji.netpulse.domain.model.UiText
+import com.capji.netpulse.domain.model.UiTextException
 import com.capji.netpulse.domain.driver.RouterDriver
 import com.capji.netpulse.domain.model.ConnectionState
 import com.capji.netpulse.domain.model.DataQuota
@@ -26,7 +29,7 @@ class RouterRepository(private val driverFor: (RouterType) -> RouterDriver) {
     private val driver = MutableStateFlow<RouterDriver?>(null)
 
     val devices: Flow<List<NetDevice>> = driver.flatMapLatest { it?.observeDevices() ?: flowOf(emptyList()) }
-    val events: Flow<String> = driver.flatMapLatest { it?.events ?: emptyFlow() }
+    val events: Flow<UiText> = driver.flatMapLatest { it?.events ?: emptyFlow() }
 
     suspend fun connect(profile: RouterProfile, password: String) {
         _connection.value = ConnectionState.Connecting
@@ -36,7 +39,11 @@ class RouterRepository(private val driverFor: (RouterType) -> RouterDriver) {
                 driver.value = d
                 _connection.value = ConnectionState.Connected(profile, it)
             }
-            .onFailure { _connection.value = ConnectionState.Failed(it.message ?: "Connection failed") }
+            .onFailure { _connection.value = ConnectionState.Failed(
+                    (it as? UiTextException)?.text
+                        ?: it.message?.takeIf { m -> m.isNotBlank() }?.let { m -> UiText(raw = m) }
+                        ?: UiText(R.string.err_connection_failed),
+                ) }
     }
 
     fun disconnect() {
@@ -45,7 +52,7 @@ class RouterRepository(private val driverFor: (RouterType) -> RouterDriver) {
         _connection.value = ConnectionState.Disconnected
     }
 
-    private fun notConnected() = Result.failure<Unit>(IllegalStateException("Not connected to a router"))
+    private fun notConnected() = Result.failure<Unit>(UiTextException(UiText(R.string.err_not_connected)))
 
     suspend fun refresh() = driver.value?.refresh()
     suspend fun setBlocked(mac: String, blocked: Boolean) = driver.value?.setBlocked(mac, blocked) ?: notConnected()

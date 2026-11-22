@@ -1,5 +1,6 @@
 package com.capji.netpulse.data.driver
 
+import com.capji.netpulse.R
 import com.capji.netpulse.domain.driver.RouterDriver
 import com.capji.netpulse.domain.model.Capability
 import com.capji.netpulse.domain.model.DataQuota
@@ -7,19 +8,22 @@ import com.capji.netpulse.domain.model.NetDevice
 import com.capji.netpulse.domain.model.RouterInfo
 import com.capji.netpulse.domain.model.RouterProfile
 import com.capji.netpulse.domain.model.SpeedLimit
+import com.capji.netpulse.domain.model.UiText
+import com.capji.netpulse.domain.model.UiTextException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 
-/** Placeholder for router families that have no driver yet (OpenWrt, generic web UI...). */
+/** Placeholder for router families that have no driver yet. */
 class UnsupportedDriver(private val title: String) : RouterDriver {
     override val capabilities = emptySet<Capability>()
-    override val events: Flow<String> = emptyFlow()
+    override val events: Flow<UiText> = emptyFlow()
 
-    private fun no() = Result.failure<Unit>(UnsupportedOperationException("$title driver isn't implemented yet"))
+    private fun ex() = UiTextException(UiText(R.string.err_driver_unsupported, listOf(title)))
+    private fun no() = Result.failure<Unit>(ex())
 
     override suspend fun connect(profile: RouterProfile, password: String): Result<RouterInfo> =
-        Result.failure(UnsupportedOperationException("$title driver isn't implemented yet - see docs/ENGINEERING_NOTES.md"))
+        Result.failure(ex())
 
     override fun observeDevices(): Flow<List<NetDevice>> = flowOf(emptyList())
     override suspend fun refresh() = Unit
