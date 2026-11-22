@@ -1,0 +1,100 @@
+package com.capji.netpulse.ui.screens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.capji.netpulse.domain.model.Capability
+import com.capji.netpulse.domain.model.ConnectionState
+import com.capji.netpulse.ui.components.ConnectionPill
+import com.capji.netpulse.ui.components.GlassCard
+import com.capji.netpulse.ui.components.Stagger
+import com.capji.netpulse.ui.theme.NpColors
+
+@Composable
+fun RouterScreen(conn: ConnectionState.Connected, onDisconnect: () -> Unit, modifier: Modifier = Modifier) {
+    val scheme = MaterialTheme.colorScheme
+    Column(
+        modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Text("Router", style = MaterialTheme.typography.headlineMedium)
+
+        Stagger(0) {
+            GlassCard(Modifier.fillMaxWidth()) {
+                ConnectionPill(conn)
+                Spacer(Modifier.height(12.dp))
+                InfoLine("Profile", conn.profile.name)
+                InfoLine("Driver", conn.profile.type.title)
+                InfoLine("Model", conn.info.model)
+                InfoLine("Firmware", conn.info.firmware)
+                InfoLine("Gateway", conn.info.gateway)
+                InfoLine("User", conn.profile.username)
+            }
+        }
+
+        Stagger(1) {
+            GlassCard(Modifier.fillMaxWidth()) {
+                Text("What this router can enforce", style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(8.dp))
+                Capability.entries.forEach { c ->
+                    val ok = c in conn.info.capabilities
+                    Row(Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            if (ok) Icons.Filled.CheckCircle else Icons.Filled.Cancel,
+                            null,
+                            tint = if (ok) NpColors.Online else scheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(c.label, color = if (ok) scheme.onSurface else scheme.onSurfaceVariant)
+                    }
+                }
+            }
+        }
+
+        Stagger(2) {
+            GlassCard(Modifier.fillMaxWidth()) {
+                Text("Good to know", style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(6.dp))
+                conn.info.notes.forEach {
+                    Text("-  $it", style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 3.dp))
+                }
+            }
+        }
+
+        Stagger(3) {
+            OutlinedButton(onClick = onDisconnect, modifier = Modifier.fillMaxWidth()) { Text("Disconnect") }
+        }
+    }
+}
+
+@Composable
+private fun InfoLine(label: String, value: String) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 3.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodyMedium)
+    }
+}
