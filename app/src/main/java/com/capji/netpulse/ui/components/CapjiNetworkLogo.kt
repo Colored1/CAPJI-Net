@@ -24,8 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.capji.netpulse.R
 
 /**
- * The real CAPJI "CJ" monogram with Wi-Fi waves built into the letters, on a light plate so the black "J" stays visible on the
- * dark UI. A soft gold ring pulses from the badge (the "network pulse").
+ * CAPJI Net emblem: a protection shield with a Wi-Fi signal (network control). A teal ring pulses from the signal dot.
  */
 @Composable
 fun CapjiNetworkLogo(modifier: Modifier = Modifier, size: Dp = 96.dp, animate: Boolean = true) {
@@ -35,9 +34,9 @@ fun CapjiNetworkLogo(modifier: Modifier = Modifier, size: Dp = 96.dp, animate: B
         Image(painterResource(R.drawable.capji_mark), contentDescription = "CAPJI", modifier = Modifier.size(size))
         if (animate) {
             Canvas(Modifier.size(size)) {
-                val c = Offset(this.size.width * 0.514f, this.size.height * 0.574f)
+                val c = Offset(this.size.width * 0.5f, this.size.height * 0.570f)
                 val r = this.size.minDimension * (0.03f + 0.17f * pulse)
-                drawCircle(Color(0xFFC4A070).copy(alpha = 0.45f * (1f - pulse)), radius = r, center = c, style = Stroke(width = this.size.minDimension * 0.015f))
+                drawCircle(Color(0xFF58E6D9).copy(alpha = 0.55f * (1f - pulse)), radius = r, center = c, style = Stroke(width = this.size.minDimension * 0.015f))
             }
         }
     }
