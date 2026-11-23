@@ -86,6 +86,21 @@ fun RouterScreen(conn: ConnectionState.Connected, onDisconnect: () -> Unit, modi
         }
 
         Stagger(3) {
+            val ctx = androidx.compose.ui.platform.LocalContext.current
+            OutlinedButton(
+                onClick = {
+                    runCatching {
+                        ctx.startActivity(
+                            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("http://" + conn.info.gateway))
+                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(stringResource(R.string.open_router_page)) }
+        }
+
+        Stagger(4) {
             OutlinedButton(onClick = onDisconnect, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.disconnect)) }
         }
     }

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
-    var type by mutableStateOf(RouterType.DEMO)
+    var type by mutableStateOf(RouterType.AUTO)
     var host by mutableStateOf("")
     var user by mutableStateOf("admin")
     var pass by mutableStateOf("")

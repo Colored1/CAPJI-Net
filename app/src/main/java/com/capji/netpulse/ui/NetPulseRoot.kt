@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -99,6 +100,7 @@ fun NetPulseRoot() {
             val snackbar = remember { SnackbarHostState() }
             LaunchedEffect(Unit) { AppGraph.toasts.collectLatest { snackbar.showSnackbar(it.resolve(ctx)) } }
 
+            val hotspotOpen by AppGraph.hotspotOpen.collectAsStateWithLifecycle()
             var tab by rememberSaveable { mutableStateOf(NavTab.HOME) }
             val devicesVm: DevicesViewModel = viewModel()
 
@@ -107,7 +109,7 @@ fun NetPulseRoot() {
                 snackbarHost = { SnackbarHost(snackbar) },
                 bottomBar = {
                     AnimatedVisibility(
-                        visible = connected != null,
+                        visible = connected != null && !hotspotOpen,
                         enter = slideInVertically(spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow)) { it } + fadeIn(),
                         exit = slideOutVertically { it } + fadeOut(),
                     ) {
@@ -127,6 +129,10 @@ fun NetPulseRoot() {
                     }
                 },
             ) { padding ->
+                if (hotspotOpen) {
+                    Box(Modifier.padding(padding)) { com.capji.netpulse.ui.screens.HotspotScreen { AppGraph.hotspotOpen.value = false } }
+                    return@Scaffold
+                }
                 AnimatedContent(
                     targetState = connected != null,
                     transitionSpec = { (fadeIn(tween(350)) + scaleIn(initialScale = 0.96f)) togetherWith fadeOut(tween(200)) },
@@ -138,6 +144,12 @@ fun NetPulseRoot() {
                         var showSettings by rememberSaveable { mutableStateOf(false) }
                         Box {
                             if (showSettings) SettingsScreen() else LoginScreen()
+                            IconButton(
+                                onClick = { AppGraph.hotspotOpen.value = true },
+                                modifier = Modifier.align(Alignment.TopStart),
+                            ) {
+                                Icon(Icons.Filled.WifiTethering, contentDescription = stringResource(R.string.hotspot_title))
+                            }
                             IconButton(
                                 onClick = { showSettings = !showSettings },
                                 modifier = Modifier.align(Alignment.TopEnd),

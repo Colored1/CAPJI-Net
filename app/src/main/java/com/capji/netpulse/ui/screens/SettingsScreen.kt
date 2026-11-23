@@ -177,8 +177,31 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             }
         }
 
-        // ---- About ----
+        // ---- Hotspot + diagnostics ----
         Stagger(5) {
+            GlassCard(Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.hotspot_title), style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(8.dp))
+                OutlinedButton(onClick = { AppGraph.hotspotOpen.value = true }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.hotspot_open_btn))
+                }
+                Spacer(Modifier.height(14.dp))
+                Text(stringResource(R.string.diag_title), style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.diag_desc), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+                Spacer(Modifier.height(8.dp))
+                val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = {
+                        clipboard.setText(androidx.compose.ui.text.AnnotatedString(com.capji.netpulse.data.net.Diag.dump().ifBlank { "(empty)" }))
+                        AppGraph.toast(UiText(R.string.toast_diag_copied))
+                    }) { Text(stringResource(R.string.diag_copy)) }
+                    OutlinedButton(onClick = { com.capji.netpulse.data.net.Diag.clear() }) { Text(stringResource(R.string.diag_clear)) }
+                }
+            }
+        }
+
+        // ---- About ----
+        Stagger(6) {
             GlassCard(Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.set_about), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(6.dp))

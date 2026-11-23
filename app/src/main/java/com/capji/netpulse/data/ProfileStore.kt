@@ -15,12 +15,13 @@ class ProfileStore(context: Context) {
 
     fun load(): List<RouterProfile> = runCatching {
         val a = JSONArray(prefs.getString(KEY, "[]"))
-        (0 until a.length()).map {
+        (0 until a.length()).mapNotNull {
             val o = a.getJSONObject(it)
+            val type = runCatching { RouterType.valueOf(o.getString("type")) }.getOrNull() ?: return@mapNotNull null
             RouterProfile(
                 id = o.getString("id"),
                 name = o.getString("name"),
-                type = RouterType.valueOf(o.getString("type")),
+                type = type,
                 host = o.getString("host"),
                 username = o.getString("user"),
             )

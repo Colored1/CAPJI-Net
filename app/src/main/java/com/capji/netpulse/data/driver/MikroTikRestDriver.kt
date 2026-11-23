@@ -43,7 +43,8 @@ class MikroTikRestDriver(
         .build(),
 ) : RouterDriver {
 
-    override val capabilities = setOf(Capability.BLOCK, Capability.SPEED_LIMIT)
+    override val capabilities = setOf(Capability.BLOCK, Capability.SPEED_LIMIT, Capability.PAUSE)
+    private val pauses = java.util.concurrent.ConcurrentHashMap<String, Long>()
     override val events: Flow<UiText> = emptyFlow()
 
     private var base = ""
@@ -122,7 +123,8 @@ class MikroTikRestDriver(
                     sessionDownMb = 0, sessionUpMb = 0,
                     liveDownKbps = rate?.getOrNull(1)?.toLongOrNull()?.div(1000)?.toInt() ?: 0,
                     liveUpKbps = rate?.getOrNull(0)?.toLongOrNull()?.div(1000)?.toInt() ?: 0,
-                    blocked = ip in blockedIps,
+                    blocked = ip in blockedIps && (pauses[mac] ?: 0L) <= System.currentTimeMillis(),
+                    pausedUntilMs = pauses[mac]?.takeIf { it > System.currentTimeMillis() && ip in blockedIps },
                     limit = q?.let { parseLimit(it) },
                 )
             }
@@ -194,8 +196,20 @@ class MikroTikRestDriver(
     override suspend fun setQuota(mac: String, quota: DataQuota?): Result<Unit> =
         Result.failure(UiTextException(UiText(R.string.err_mt_quota)))
 
-    override suspend fun pause(mac: String, minutes: Int): Result<Unit> =
-        Result.failure(UiTextException(UiText(R.string.err_mt_pause)))
+    /** Pause = address-list entry with a RouterOS `timeout`: the ROUTER removes it, the app doesn't need to stay open. */
+    override suspend fun pause(mac: String, minutes: Int): Result<Unit> = io {
+        val d = deviceOf(mac)
+        val found = array("/ip/firewall/address-list?list=$LIST&address=${d.ip}")
+        for (i in 0 until found.length()) call("DELETE", "/ip/firewall/address-list/" + found.getJSONObject(i).getString(".id"))
+        pauses.remove(mac)
+        if (minutes > 0) {
+            call(
+                "PUT", "/ip/firewall/address-list",
+                JSONObject().put("list", LIST).put("address", d.ip).put("comment", mac).put("timeout", "${minutes}m"),
+            )
+            pauses[mac] = System.currentTimeMillis() + minutes * 60_000L
+        }
+    }
 
     override fun disconnect() = Unit
 

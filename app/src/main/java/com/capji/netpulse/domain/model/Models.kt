@@ -64,10 +64,14 @@ enum class Capability(@StringRes val labelRes: Int) {
 }
 
 enum class RouterType(val shortName: String, @StringRes val titleRes: Int, val implemented: Boolean) {
-    DEMO("Demo", R.string.rt_demo, true),
+    AUTO("Auto", R.string.rt_auto, true),
+    HUAWEI_LTE("Huawei HiLink", R.string.rt_huawei_lte, true),
+    HUAWEI_ONT("Huawei ONT", R.string.rt_huawei_ont, true),
+    ZTE("ZTE", R.string.rt_zte, true),
+    TPLINK("TP-Link", R.string.rt_tplink, true),
     MIKROTIK("MikroTik", R.string.rt_mikrotik, true),
-    OPENWRT("OpenWrt", R.string.rt_openwrt, false),
-    GENERIC("Generic", R.string.rt_generic, false),
+    GENERIC("Scan", R.string.rt_generic, true),
+    DEMO("Demo", R.string.rt_demo, true),
 }
 
 data class RouterProfile(

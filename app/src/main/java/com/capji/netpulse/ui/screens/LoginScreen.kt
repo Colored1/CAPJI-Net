@@ -111,6 +111,8 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
                         FilterChip(selected = vm.type == t, onClick = { vm.type = t }, label = { Text(stringResource(t.titleRes)) })
                     }
                 }
+                Spacer(Modifier.height(6.dp))
+                Text(stringResource(R.string.login_creds_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = vm.host,
@@ -153,7 +155,8 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
                 Spacer(Modifier.height(8.dp))
                 Button(
                     onClick = vm::connect,
-                    enabled = !connecting && vm.host.isNotBlank() && vm.pass.isNotBlank(),
+                    enabled = !connecting && (vm.host.isNotBlank() || vm.type == RouterType.AUTO) &&
+                        (vm.pass.isNotBlank() || vm.type == RouterType.GENERIC),
                     modifier = Modifier.fillMaxWidth().height(54.dp),
                 ) {
                     AnimatedContent(connecting, label = "connectBtn") { busy ->

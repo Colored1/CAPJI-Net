@@ -12,7 +12,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.capji.netpulse.data.driver.MikroTikRestDriver
 import com.capji.netpulse.data.driver.MockRouterDriver
-import com.capji.netpulse.data.driver.UnsupportedDriver
+import com.capji.netpulse.data.driver.AutoGatewayDriver
+import com.capji.netpulse.data.driver.HuaweiHiLinkDriver
+import com.capji.netpulse.data.driver.HuaweiOntDriver
+import com.capji.netpulse.data.driver.ScanOnlyDriver
+import com.capji.netpulse.data.driver.TpLinkDriver
+import com.capji.netpulse.data.driver.ZteDriver
+import com.capji.netpulse.domain.driver.RouterDriver
 import com.capji.netpulse.domain.model.RouterType
 import com.capji.netpulse.domain.model.SpeedRecord
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +29,8 @@ import java.util.concurrent.TimeUnit
 /** Tiny manual DI container. Swap for Hilt/Koin when the app grows. */
 object AppGraph {
     private lateinit var appContext: Context
+    val context: Context get() = appContext
+    val hotspotOpen = MutableStateFlow(false)
     lateinit var profiles: ProfileStore
         private set
 
@@ -34,13 +42,18 @@ object AppGraph {
     }
 
     /** The only place that knows which driver class belongs to which router type. */
-    val repo = RouterRepository { type ->
-        when (type) {
-            RouterType.DEMO -> MockRouterDriver()
-            RouterType.MIKROTIK -> MikroTikRestDriver()
-            else -> UnsupportedDriver(type.shortName)
-        }
+    fun driverFor(type: RouterType): RouterDriver = when (type) {
+        RouterType.DEMO -> MockRouterDriver()
+        RouterType.MIKROTIK -> MikroTikRestDriver()
+        RouterType.HUAWEI_LTE -> HuaweiHiLinkDriver()
+        RouterType.HUAWEI_ONT -> HuaweiOntDriver()
+        RouterType.ZTE -> ZteDriver()
+        RouterType.TPLINK -> TpLinkDriver()
+        RouterType.GENERIC -> ScanOnlyDriver()
+        RouterType.AUTO -> AutoGatewayDriver()
     }
+
+    val repo = RouterRepository { type -> driverFor(type) }
 
     val toasts = MutableSharedFlow<UiText>(extraBufferCapacity = 8)
     lateinit var settings: SettingsStore
