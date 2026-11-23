@@ -252,4 +252,14 @@
     <string name="contact_call">Call</string>
     <string name="link_failed">Couldn\'t open the link</string>
     <string name="note_auto_unknown">Couldn\'t recognise the router brand at the addresses tried, so only a network scan is shown. Choose your router brand manually, check the router address, or use the Router page assistant.</string>
+    <string name="cd_dismiss">Dismiss</string>
+    <string name="update_title">Update available</string>
+    <string name="update_default">A new version of CAPJI Net is available with improvements and fixes.</string>
+    <string name="update_force_default">This update is required to keep using the app. Please update now.</string>
+    <string name="update_now">Update now</string>
+    <string name="update_later">Later</string>
+    <string name="announce_open">Learn more</string>
+    <string name="maint_title">Under maintenance</string>
+    <string name="maint_default">We are improving CAPJI Net. Please try again in a little while.</string>
+    <string name="maint_retry">Try again</string>
 </resources>

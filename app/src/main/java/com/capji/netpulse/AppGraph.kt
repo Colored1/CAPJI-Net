@@ -31,6 +31,8 @@ object AppGraph {
     private lateinit var appContext: Context
     val context: Context get() = appContext
     val hotspotOpen = MutableStateFlow(false)
+    /** tab requested by a notification / deep link (HOME, DEVICES, SPEED, ROUTER, SETTINGS, HOTSPOT) */
+    val requestedTab = MutableStateFlow<String?>(null)
     val assist = MutableStateFlow<com.capji.netpulse.ui.screens.AssistRequest?>(null)
     @Volatile var sessionPass: String = ""
     lateinit var profiles: ProfileStore
@@ -92,6 +94,8 @@ class NetPulseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         AppGraph.init(this)
+        com.capji.netpulse.remote.Push.init(this)
+        com.capji.netpulse.remote.RemoteConfigManager.init(this)
         if (com.capji.netpulse.work.Bg.schedules().isNotEmpty()) com.capji.netpulse.work.Bg.kick()
         // First launch: Arabic by default. After that the user's choice is kept by AppCompat.
         val prefs = getSharedPreferences("boot", MODE_PRIVATE)

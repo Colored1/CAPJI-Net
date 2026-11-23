@@ -85,6 +85,7 @@ fun HomeScreen(
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
+        item { com.capji.netpulse.ui.remote.AnnouncementCard() }
         item {
             Stagger(0) {
                 Column {

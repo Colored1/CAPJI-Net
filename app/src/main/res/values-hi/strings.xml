@@ -252,4 +252,14 @@
     <string name="contact_call">कॉल</string>
     <string name="link_failed">लिंक नहीं खुल सका</string>
     <string name="note_auto_unknown">आज़माए पतों पर राउटर ब्रांड नहीं पहचाना गया, इसलिए सिर्फ नेटवर्क स्कैन दिख रहा है। ब्रांड चुनें, पता जांचें या राउटर पेज असिस्टेंट इस्तेमाल करें।</string>
+    <string name="cd_dismiss">बंद करें</string>
+    <string name="update_title">अपडेट उपलब्ध है</string>
+    <string name="update_default">CAPJI Net का नया संस्करण सुधारों के साथ उपलब्ध है।</string>
+    <string name="update_force_default">ऐप का उपयोग जारी रखने के लिए यह अपडेट ज़रूरी है। कृपया अभी अपडेट करें।</string>
+    <string name="update_now">अभी अपडेट करें</string>
+    <string name="update_later">बाद में</string>
+    <string name="announce_open">और जानें</string>
+    <string name="maint_title">रखरखाव जारी है</string>
+    <string name="maint_default">हम CAPJI Net को बेहतर बना रहे हैं। कृपया थोड़ी देर बाद पुनः प्रयास करें।</string>
+    <string name="maint_retry">फिर कोशिश करें</string>
 </resources>

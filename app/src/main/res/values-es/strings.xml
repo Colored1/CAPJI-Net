@@ -252,4 +252,14 @@
     <string name="contact_call">Llamar</string>
     <string name="link_failed">No se pudo abrir el enlace</string>
     <string name="note_auto_unknown">No se reconoció la marca del router en las direcciones probadas: solo se muestra el escaneo. Elige la marca, revisa la dirección o usa el asistente.</string>
+    <string name="cd_dismiss">Cerrar</string>
+    <string name="update_title">Actualización disponible</string>
+    <string name="update_default">Hay una nueva versión de CAPJI Net con mejoras y correcciones.</string>
+    <string name="update_force_default">Esta actualización es obligatoria para seguir usando la app. Actualiza ahora.</string>
+    <string name="update_now">Actualizar ahora</string>
+    <string name="update_later">Más tarde</string>
+    <string name="announce_open">Más información</string>
+    <string name="maint_title">En mantenimiento</string>
+    <string name="maint_default">Estamos mejorando CAPJI Net. Inténtalo de nuevo en un momento.</string>
+    <string name="maint_retry">Reintentar</string>
 </resources>

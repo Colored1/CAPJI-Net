@@ -252,4 +252,14 @@
     <string name="contact_call">اتصال</string>
     <string name="link_failed">تعذّر فتح الرابط</string>
     <string name="note_auto_unknown">لم يُعرف نوع الراوتر على العناوين المجرّبة، لذلك يظهر فحص الشبكة فقط. اختر ماركة الراوتر يدوياً أو تحقق من عنوانه أو استخدم مساعد صفحة الراوتر.</string>
+    <string name="cd_dismiss">إغلاق</string>
+    <string name="update_title">يتوفر تحديث جديد</string>
+    <string name="update_default">يتوفر إصدار جديد من كابجي نت بتحسينات وإصلاحات.</string>
+    <string name="update_force_default">هذا التحديث مطلوب لمتابعة استخدام التطبيق. يرجى التحديث الآن.</string>
+    <string name="update_now">حدّث الآن</string>
+    <string name="update_later">لاحقاً</string>
+    <string name="announce_open">اعرف المزيد</string>
+    <string name="maint_title">التطبيق تحت الصيانة</string>
+    <string name="maint_default">نقوم بتحسين كابجي نت حالياً. يرجى المحاولة مرة أخرى بعد قليل.</string>
+    <string name="maint_retry">إعادة المحاولة</string>
 </resources>

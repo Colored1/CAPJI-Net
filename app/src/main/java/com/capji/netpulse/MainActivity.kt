@@ -19,6 +19,20 @@ class MainActivity : AppCompatActivity() {
         if (android.os.Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED
         ) requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+        handleIntent(intent)
         setContent { NetPulseRoot() }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    /** Notification payload keys: url (https only) -> opens the link; tab -> opens that tab; capji://tab/<name> deep link. */
+    private fun handleIntent(i: android.content.Intent?) {
+        if (i == null) return
+        i.getStringExtra("tab")?.let { AppGraph.requestedTab.value = it.uppercase() }
+        i.data?.takeIf { it.scheme == "capji" }?.lastPathSegment?.let { AppGraph.requestedTab.value = it.uppercase() }
+        i.getStringExtra("url")?.let { com.capji.netpulse.ui.remote.openRemoteLink(this, it) }
     }
 }

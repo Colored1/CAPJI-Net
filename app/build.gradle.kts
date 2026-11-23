@@ -4,6 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// Firebase is optional at build time: the Google Services plugin is applied ONLY when app/google-services.json exists.
+// Without that file the app still builds and runs (remote control / push are simply inactive).
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 android {
     namespace = "com.capji.netpulse"
     compileSdk = 35
@@ -36,6 +42,9 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.work)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging) // KTX APIs are part of the main artifact since BoM 32
+    implementation(libs.firebase.config)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)

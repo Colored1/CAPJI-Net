@@ -104,6 +104,14 @@ fun NetPulseRoot() {
             val assistReq by AppGraph.assist.collectAsStateWithLifecycle()
             var tab by rememberSaveable { mutableStateOf(NavTab.HOME) }
             val devicesVm: DevicesViewModel = viewModel()
+            com.capji.netpulse.ui.remote.RemoteOverlays()
+            val reqTab by AppGraph.requestedTab.collectAsStateWithLifecycle()
+            LaunchedEffect(reqTab) {
+                val r = reqTab ?: return@LaunchedEffect
+                if (r == "HOTSPOT") AppGraph.hotspotOpen.value = true
+                else NavTab.entries.firstOrNull { it.name == r }?.let { tab = it }
+                AppGraph.requestedTab.value = null
+            }
 
             Scaffold(
                 containerColor = Color.Transparent,
