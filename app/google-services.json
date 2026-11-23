@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "37181648277",
+    "project_id": "capji-net",
+    "storage_bucket": "capji-net.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37181648277:android:b839810fd1dda1978a9a9c",
+        "android_client_info": {
+          "package_name": "com.capji.netpulse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE0OTefBVGDe_GPSMbHf3CUkEcAoSH75Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
