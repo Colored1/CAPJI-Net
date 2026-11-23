@@ -68,6 +68,8 @@ enum class RouterType(val shortName: String, @StringRes val titleRes: Int, val i
     HUAWEI_LTE("Huawei HiLink", R.string.rt_huawei_lte, true),
     HUAWEI_ONT("Huawei ONT", R.string.rt_huawei_ont, true),
     ZTE("ZTE", R.string.rt_zte, true),
+    TENDA("Tenda", R.string.rt_tenda, true),
+    DLINK("D-Link", R.string.rt_dlink, true),
     TPLINK("TP-Link", R.string.rt_tplink, true),
     MIKROTIK("MikroTik", R.string.rt_mikrotik, true),
     GENERIC("Scan", R.string.rt_generic, true),

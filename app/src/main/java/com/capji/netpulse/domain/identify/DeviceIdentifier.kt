@@ -52,6 +52,13 @@ object DeviceIdentifier {
             "redmi" in h || "poco" in h || "xiaomi" in h -> { model = "Xiaomi Redmi/POCO"; kind = DeviceKind.PHONE }
             "huawei" in h || "honor" in h -> { model = "Huawei / Honor"; kind = DeviceKind.PHONE }
             "pixel" in h -> { model = "Google Pixel"; kind = DeviceKind.PHONE }
+            "oppo" in h || h.startsWith("cph") || "realme" in h || "rmx" in h -> { model = if ("realme" in h || "rmx" in h) "Realme" else "OPPO"; kind = DeviceKind.PHONE }
+            h.startsWith("vivo") || h.startsWith("iqoo") -> { model = "vivo"; kind = DeviceKind.PHONE }
+            "tecno" in h || "infinix" in h || "itel" in h -> { model = if ("infinix" in h) "Infinix" else if ("itel" in h) "itel" else "TECNO"; kind = DeviceKind.PHONE }
+            "oneplus" in h -> { model = "OnePlus"; kind = DeviceKind.PHONE }
+            "nokia" in h -> { model = "Nokia"; kind = DeviceKind.PHONE }
+            "lenovo" in h || "thinkpad" in h -> { model = "Lenovo"; kind = DeviceKind.LAPTOP }
+            h.startsWith("sm-t") || "tab" in h && "galaxy" !in h -> { model = "Tablet"; kind = DeviceKind.TABLET }
             h == "android" || h.startsWith("android-") -> { model = "Android device"; kind = DeviceKind.PHONE }
             h.startsWith("desktop-") || h.startsWith("laptop-") -> { model = "Windows PC"; kind = DeviceKind.LAPTOP }
             "tv" in h || "roku" in h || "bravia" in h -> { model = "Smart TV"; kind = DeviceKind.TV }

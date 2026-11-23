@@ -186,6 +186,9 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     Text(stringResource(R.string.hotspot_open_btn))
                 }
                 Spacer(Modifier.height(14.dp))
+                val bg by AppGraph.settings.bgTimers.collectAsStateWithLifecycle()
+                ToggleRow(stringResource(R.string.bg_timers), stringResource(R.string.bg_timers_desc), bg) { AppGraph.settings.setBgTimers(it) }
+                Spacer(Modifier.height(10.dp))
                 Text(stringResource(R.string.diag_title), style = MaterialTheme.typography.titleMedium)
                 Text(stringResource(R.string.diag_desc), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
                 Spacer(Modifier.height(8.dp))
@@ -211,6 +214,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 Text(stringResource(R.string.about_dev), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
             }
         }
+        Stagger(7) { AboutContactCard() }
         Spacer(Modifier.height(24.dp))
     }
 }

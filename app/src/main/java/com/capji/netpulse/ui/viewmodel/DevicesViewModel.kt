@@ -49,6 +49,7 @@ class DevicesViewModel : ViewModel() {
 
     init {
         repo.devices.onEach { list ->
+            repo.remember(list)
             val total = list.sumOf { it.liveDownKbps } / 1000f
             throughput.update { (it + total).takeLast(40) }
         }.launchIn(viewModelScope)

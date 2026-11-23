@@ -31,6 +31,8 @@ object AppGraph {
     private lateinit var appContext: Context
     val context: Context get() = appContext
     val hotspotOpen = MutableStateFlow(false)
+    val assist = MutableStateFlow<com.capji.netpulse.ui.screens.AssistRequest?>(null)
+    @Volatile var sessionPass: String = ""
     lateinit var profiles: ProfileStore
         private set
 
@@ -48,6 +50,8 @@ object AppGraph {
         RouterType.HUAWEI_LTE -> HuaweiHiLinkDriver()
         RouterType.HUAWEI_ONT -> HuaweiOntDriver()
         RouterType.ZTE -> ZteDriver()
+        RouterType.TENDA -> com.capji.netpulse.data.driver.TendaDriver()
+        RouterType.DLINK -> com.capji.netpulse.data.driver.DlinkHnapDriver()
         RouterType.TPLINK -> TpLinkDriver()
         RouterType.GENERIC -> ScanOnlyDriver()
         RouterType.AUTO -> AutoGatewayDriver()
@@ -58,6 +62,8 @@ object AppGraph {
     val toasts = MutableSharedFlow<UiText>(extraBufferCapacity = 8)
     lateinit var settings: SettingsStore
         private set
+    lateinit var secrets: com.capji.netpulse.data.SecretStore
+        private set
     val profilesState = MutableStateFlow<List<RouterProfile>>(emptyList())
     val speedHistory = MutableStateFlow<List<SpeedRecord>>(emptyList())
 
@@ -65,11 +71,14 @@ object AppGraph {
         appContext = context.applicationContext
         profiles = ProfileStore(appContext)
         settings = SettingsStore(appContext)
+        secrets = com.capji.netpulse.data.SecretStore(appContext)
         profilesState.value = profiles.load()
     }
 
     fun clearProfiles() {
         profilesState.value = profiles.clear()
+        secrets.clearAll()
+        com.capji.netpulse.work.Bg.clearAll()
     }
 
     fun detectGateway(): String? = GatewayDetector.detect(appContext)
@@ -83,6 +92,7 @@ class NetPulseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         AppGraph.init(this)
+        if (com.capji.netpulse.work.Bg.schedules().isNotEmpty()) com.capji.netpulse.work.Bg.kick()
         // First launch: Arabic by default. After that the user's choice is kept by AppCompat.
         val prefs = getSharedPreferences("boot", MODE_PRIVATE)
         if (!prefs.getBoolean("lang_init", false)) {

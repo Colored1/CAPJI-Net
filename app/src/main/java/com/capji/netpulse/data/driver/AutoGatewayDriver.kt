@@ -61,6 +61,11 @@ class AutoGatewayDriver : RouterDriver {
         runCatching {
             if (http.get("http://$host/api/webserver/SesTokInfo").body.contains("<SesInfo>", true)) return RouterType.HUAWEI_LTE
         }
+        runCatching {
+            val h = http.get("http://$host/HNAP1/")
+            if (h.body.contains("HNAP", true) && h.code == 200) return RouterType.DLINK
+        }
+        if (page.contains("tenda") || page.contains("/login/auth")) return RouterType.TENDA
         if (page.contains("frm_logintoken") || page.contains("zxhn") || page.contains("zte corporation")) return RouterType.ZTE
         if (page.contains("tp-link") || page.contains("tplink") || page.contains("/userrpm/") || page.contains("luci") && page.contains("tp")) return RouterType.TPLINK
         if (root.code == 401 && root.headers.toString().lowercase().contains("tp-link")) return RouterType.TPLINK

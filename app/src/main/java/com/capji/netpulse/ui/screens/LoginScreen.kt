@@ -73,6 +73,7 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
         Stagger(0) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 RadarPulse(scanning = connecting, deviceCount = 0, size = 150.dp)
+                com.capji.netpulse.ui.components.CapjiNetworkLogo(size = 88.dp)
                 Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
                 Text(stringResource(R.string.tagline), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -188,5 +189,8 @@ fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel())
                 )
             }
         }
+
+        Stagger(5) { AboutContactCard() }
+        Spacer(Modifier.height(16.dp))
     }
 }

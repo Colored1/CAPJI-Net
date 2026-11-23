@@ -294,6 +294,8 @@ fun DeviceControlScreen(
                 if (Capability.PAUSE !in caps) UnsupportedHint(stringResource(R.string.pause_unsupported))
             }
         }
+        ScheduleCard(device, caps)
+        AssistCard(device)
         Spacer(Modifier.height(24.dp))
     }
 

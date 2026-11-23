@@ -100,7 +100,9 @@ fun RouterScreen(conn: ConnectionState.Connected, onDisconnect: () -> Unit, modi
             ) { Text(stringResource(R.string.open_router_page)) }
         }
 
-        Stagger(4) {
+        Stagger(4) { AssistCard(null) }
+
+        Stagger(5) {
             OutlinedButton(onClick = onDisconnect, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.disconnect)) }
         }
     }

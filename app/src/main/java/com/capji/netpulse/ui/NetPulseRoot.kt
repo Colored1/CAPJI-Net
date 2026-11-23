@@ -101,6 +101,7 @@ fun NetPulseRoot() {
             LaunchedEffect(Unit) { AppGraph.toasts.collectLatest { snackbar.showSnackbar(it.resolve(ctx)) } }
 
             val hotspotOpen by AppGraph.hotspotOpen.collectAsStateWithLifecycle()
+            val assistReq by AppGraph.assist.collectAsStateWithLifecycle()
             var tab by rememberSaveable { mutableStateOf(NavTab.HOME) }
             val devicesVm: DevicesViewModel = viewModel()
 
@@ -109,7 +110,7 @@ fun NetPulseRoot() {
                 snackbarHost = { SnackbarHost(snackbar) },
                 bottomBar = {
                     AnimatedVisibility(
-                        visible = connected != null && !hotspotOpen,
+                        visible = connected != null && !hotspotOpen && assistReq == null,
                         enter = slideInVertically(spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow)) { it } + fadeIn(),
                         exit = slideOutVertically { it } + fadeOut(),
                     ) {
@@ -129,6 +130,10 @@ fun NetPulseRoot() {
                     }
                 },
             ) { padding ->
+                assistReq?.let { r ->
+                    Box(Modifier.padding(padding)) { com.capji.netpulse.ui.screens.RouterAssistScreen(r) { AppGraph.assist.value = null } }
+                    return@Scaffold
+                }
                 if (hotspotOpen) {
                     Box(Modifier.padding(padding)) { com.capji.netpulse.ui.screens.HotspotScreen { AppGraph.hotspotOpen.value = false } }
                     return@Scaffold

@@ -54,6 +54,8 @@ class LoginViewModel : ViewModel() {
             username = user.trim(),
         )
         if (remember) AppGraph.profilesState.value = AppGraph.profiles.save(profile)
+        AppGraph.sessionPass = pass
+        if (AppGraph.settings.bgTimers.value) AppGraph.secrets.put(profile.id, pass)
         viewModelScope.launch { AppGraph.repo.connect(profile, pass) }
     }
 
