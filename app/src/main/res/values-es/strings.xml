@@ -251,4 +251,5 @@
     <string name="about_rights">© CAPJI - Desarrollado por CAPJI. Todos los derechos reservados.</string>
     <string name="contact_call">Llamar</string>
     <string name="link_failed">No se pudo abrir el enlace</string>
+    <string name="note_auto_unknown">No se reconoció la marca del router en las direcciones probadas: solo se muestra el escaneo. Elige la marca, revisa la dirección o usa el asistente.</string>
 </resources>

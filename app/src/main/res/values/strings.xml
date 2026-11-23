@@ -251,4 +251,5 @@
     <string name="about_rights">© CAPJI - Developed by CAPJI. All rights reserved.</string>
     <string name="contact_call">Call</string>
     <string name="link_failed">Couldn\'t open the link</string>
+    <string name="note_auto_unknown">Couldn\'t recognise the router brand at the addresses tried, so only a network scan is shown. Choose your router brand manually, check the router address, or use the Router page assistant.</string>
 </resources>

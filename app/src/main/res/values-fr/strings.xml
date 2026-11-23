@@ -251,4 +251,5 @@
     <string name="about_rights">© CAPJI - Développé par CAPJI. Tous droits réservés.</string>
     <string name="contact_call">Appeler</string>
     <string name="link_failed">Impossible d\'ouvrir le lien</string>
+    <string name="note_auto_unknown">Marque du routeur non reconnue aux adresses testées : seule l\'analyse réseau s\'affiche. Choisissez la marque, vérifiez l\'adresse ou utilisez l\'assistant de page.</string>
 </resources>

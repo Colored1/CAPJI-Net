@@ -1,4 +1,4 @@
 <resources>
     <color name="np_bg">#FF0A0E1A</color>
-    <color name="ic_launcher_background">#FF0A0E1A</color>
+    <color name="ic_launcher_background">#FFFFFFFF</color>
 </resources>

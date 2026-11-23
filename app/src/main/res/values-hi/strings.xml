@@ -251,4 +251,5 @@
     <string name="about_rights">© CAPJI - CAPJI द्वारा विकसित। सर्वाधिकार सुरक्षित।</string>
     <string name="contact_call">कॉल</string>
     <string name="link_failed">लिंक नहीं खुल सका</string>
+    <string name="note_auto_unknown">आज़माए पतों पर राउटर ब्रांड नहीं पहचाना गया, इसलिए सिर्फ नेटवर्क स्कैन दिख रहा है। ब्रांड चुनें, पता जांचें या राउटर पेज असिस्टेंट इस्तेमाल करें।</string>
 </resources>

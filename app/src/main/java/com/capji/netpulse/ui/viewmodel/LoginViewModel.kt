@@ -45,6 +45,7 @@ class LoginViewModel : ViewModel() {
     }
 
     fun connect() {
+        if (host.isBlank()) detectGateway()
         val h = host.trim()
         val profile = RouterProfile(
             id = "${type.name}-$h-${user.trim()}",

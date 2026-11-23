@@ -251,4 +251,5 @@
     <string name="about_rights">© كابجي - تطوير CAPJI. جميع الحقوق محفوظة لـ CAPJI.</string>
     <string name="contact_call">اتصال</string>
     <string name="link_failed">تعذّر فتح الرابط</string>
+    <string name="note_auto_unknown">لم يُعرف نوع الراوتر على العناوين المجرّبة، لذلك يظهر فحص الشبكة فقط. اختر ماركة الراوتر يدوياً أو تحقق من عنوانه أو استخدم مساعد صفحة الراوتر.</string>
 </resources>

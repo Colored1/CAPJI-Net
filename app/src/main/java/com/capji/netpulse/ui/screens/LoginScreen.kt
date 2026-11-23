@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,7 @@ import com.capji.netpulse.ui.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier, vm: LoginViewModel = viewModel()) {
+    LaunchedEffect(Unit) { if (vm.host.isBlank()) vm.detectGateway() }
     val conn by vm.connection.collectAsStateWithLifecycle()
     val profiles by vm.profiles.collectAsStateWithLifecycle()
     val connecting = conn is ConnectionState.Connecting

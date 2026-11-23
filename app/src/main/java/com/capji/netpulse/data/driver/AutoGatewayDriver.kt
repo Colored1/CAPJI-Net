@@ -47,7 +47,7 @@ class AutoGatewayDriver : RouterDriver {
                     return@withContext Result.failure(firstError!!)
                 }
             }
-            val scan = ScanOnlyDriver(firstError?.let { (it as? UiTextException)?.text })
+            val scan = ScanOnlyDriver(firstError?.let { (it as? UiTextException)?.text } ?: UiText(R.string.note_auto_unknown))
             val r = scan.connect(profile, password)
             if (r.isSuccess) delegate = scan
             r
